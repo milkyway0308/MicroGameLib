@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'skywolf46.wolfradle' version "1.1.5"
+    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
+}
+
+version properties["version"]
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.32'
+    spigotApi("1.12.2")
+    compileOnly "skywolf46:commandannotation-core:3.0.12"
+    compileOnly "skywolf46:commandannotation-minecraft:3.0.12"
+    compileOnly "skywolf46:placeholders:1.6.3"
+    compileOnly "skywolf46:exutil:1.46.0"
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "Reposilite"
+            url(rootProject.properties["snapshot"] as Boolean ? rootProject.properties['reposilite.snapshot'] as String : rootProject.properties['reposilite.release'] as String)
+            credentials {
+                username rootProject.properties['reposilite.user'] as String
+                password rootProject.properties['reposilite.token'] as String
+            }
+        }
+    }
+    publications {
+        create("jar", MavenPublication) {
+            groupId 'skywolf46'
+            artifactId "MicroGameLib"
+            version rootProject.properties['version'] as String
+            from components.java
+        }
+    }
+}
+
+
