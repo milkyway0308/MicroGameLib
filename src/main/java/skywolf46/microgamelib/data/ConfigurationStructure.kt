@@ -11,6 +11,7 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.kotlinProperty
 
 class ConfigurationStructure {
     //                                       FieldName, Field type, Default declare
@@ -41,6 +42,10 @@ class ConfigurationStructure {
                         x.javaField!!,
                         x.javaField!!.type as Class<Any>,
                         (x as KProperty1<Any, Any>).get(created))
+                if (Map::class.java.isAssignableFrom(field.type)) {
+                    println("Map! Checking types")
+                    println(field!!.kotlinProperty!!.typeParameters)
+                }
                 fields[fieldType.displayName] = fieldType
                 if (fieldType.defValue != null)
                     declaredVariables[fieldType.displayName] = fieldType.defValue

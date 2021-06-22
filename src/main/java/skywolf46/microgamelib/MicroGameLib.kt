@@ -167,6 +167,7 @@ class MicroGameLib : JavaPlugin() {
         for ((x, y) in GameInstanceStorage.gameMapData) {
             if (!y.isMultiStaged && GameInstanceStorage.getGameInstance(x) == null) {
                 GameInstanceStorage.gameMap[x] = GameInstanceObject(y, y.gameConfiguration!!)
+                log("§e--- Registered minigame instance \"$x\".")
             }
         }
     }
