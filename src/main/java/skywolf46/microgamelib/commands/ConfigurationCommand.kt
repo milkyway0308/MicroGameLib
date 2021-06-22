@@ -60,21 +60,21 @@ object ConfigurationCommand {
     // Min - 2 arguments
     @MinecraftCommand("$GLOBAL_GAME_PREFIX set <string> <string>")
     fun Arguments.onSetValue(sender: CommandSender) {
-        println("Pre-conditions: $preArguments")
-        println("Args: ${_separated.contentToString()}")
-        println("Current pointer: ${_sysPointer}")
         args<String>(false) { stageName ->
-            println("Pre-conditions depth 1: $preArguments")
             GameInstanceStorage.getGameInstance(stageName)?.let { stage ->
                 args<String>(false) { fieldName ->
-                    println("Pre-conditions depth 2: $preArguments")
                     if (fieldName !in stage.gameConfig.fields) {
-                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance $fieldName is not exists")
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is not exists")
                         return
                     }
                     val configField = stage.gameConfig.fields[fieldName]!!
                     if (List::class.java.isAssignableFrom(configField.type)) {
-                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance $fieldName is List; Use $GLOBAL_GAME_PREFIX <add / remove> <Value(Any)> instead.")
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is List; Use $GLOBAL_GAME_PREFIX <add / remove> <Value(Any)> instead.")
+                        return
+                    }
+
+                    if (Map::class.java.isAssignableFrom(configField.type)) {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is Map; Use $GLOBAL_GAME_PREFIX <insert / remove> <Value(Any)> instead.")
                         return
                     }
                     args(configField.type.kotlin, false) { argument ->
@@ -119,7 +119,6 @@ object ConfigurationCommand {
 
     @MinecraftCommand("/mglib config <string> remove")
     fun Arguments.onRemoveValue(sender: CommandSender) {
-        println(args<String>())
         if (size() < 3) {
             sender.sendMessage(
                 "§bMicroGameLib v${MicroGameLib.inst.description.version}",

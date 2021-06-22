@@ -19,7 +19,6 @@ data class FieldData(
     val argumentTypes: Array<Class<*>> = if (field.genericType is ParameterizedType) {
         val data = field.genericType as ParameterizedType
         try {
-            println(data.actualTypeArguments.contentToString())
             data.actualTypeArguments.map { x ->
                 Class.forName(x.typeName)
             }.toTypedArray()
