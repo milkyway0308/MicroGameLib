@@ -1,8 +1,11 @@
 package skywolf46.microgamelib.data
 
 import org.bukkit.configuration.ConfigurationSection
+import skywolf46.extrautility.util.getMap
 import skywolf46.extrautility.util.log
 import skywolf46.microgamelib.annotations.Replace
+import skywolf46.microgamelib.storage.DataConverterStorage
+import java.lang.Exception
 import java.lang.IllegalStateException
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
@@ -45,7 +48,6 @@ class ConfigurationStructure {
                 fields[fieldType.displayName] = fieldType
                 if (fieldType.defValue != null)
                     declaredVariables[fieldType.displayName] = fieldType.defValue
-                log("§e---- Loaded ${cls.qualifiedName}#${x.name}")
             }
         } else {
             log("§c---- Cannot process ${cls.qualifiedName} : @GameConfiguration target constructor must empty.")
@@ -54,8 +56,35 @@ class ConfigurationStructure {
 
     constructor(cls: KClass<*>, config: ConfigurationSection) : this(cls) {
         for (x in config.getKeys(false)) {
-            declaredVariables[x] = config[x]
+            // Skip if not member
+            if (x !in fields)
+                continue
+            val data = config.get(x)
+            if (data is ConfigurationSection) {
+                // Construct to map
+                declaredVariables[x] = config.getMap(x)
+            } else {
+                // Try to cast if type illegal
+                val type = fields[x]!!.type
+                if (!type.isAssignableFrom(data.javaClass)) {
+                    try {
+                        DataConverterStorage.of(
+                            data.javaClass, fields[x]!!.type
+                        )?.apply {
+                            declaredVariables[x] =
+                                DataConverterStorage.of(data.javaClass, type)!!.invoke(data)
+                        }
+                            ?: log("§c---- Deserialization denied for field $x at configuration class ${cls.qualifiedName} : No converter registered from ${data.javaClass.name} to ${fields[x]!!.type.name}")
+                    } catch (e: Exception) {
+                        log("§c---- Illegal field deserialization in field $x at configuration class ${cls.qualifiedName} : Error occurred while converting from ${data.javaClass.name} to ${fields[x]!!.type.name}")
+                        e.printStackTrace()
+                    }
+                } else {
+                    declaredVariables[x] = data
+                }
+            }
         }
+
     }
 
     operator fun get(name: String) = declaredVariables[name]
@@ -82,5 +111,11 @@ class ConfigurationStructure {
 
     fun loadFromSection(sector: ConfigurationSection): ConfigurationStructure {
         return ConfigurationStructure(targetClass, sector)
+    }
+
+    fun saveToSection(yamlConfiguration: ConfigurationSection) {
+        for ((x, y) in declaredVariables) {
+            yamlConfiguration.set(x, y)
+        }
     }
 }

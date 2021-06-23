@@ -10,7 +10,7 @@ class TestConfiguration {
     val name = "Test"
     var data = "Test4"
     var task: Location? = null
-    var systemVersion: String? = "40.0"
+    var systemVersion: Double = 25.0
 
-    var map = mutableMapOf<String, Location>()
+    var map = mutableMapOf<String, String>()
 }

@@ -41,7 +41,7 @@ object GameManageCommand {
             args<String>(false) { gameName ->
                 GameInstanceStorage.gameMap[stageName] =
                     GameInstanceStorage.getGameInstanceData(gameName)?.run {
-                        GameInstanceObject(this, this.gameConfiguration!!)
+                        GameInstanceObject(stageName, this, this.gameConfiguration!!)
                     } ?: kotlin.run {
                         sender.sendMessage("§cCannot register game instance \"$stageName\" : Target game \"$gameName\" not registered")
                         return

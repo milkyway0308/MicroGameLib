@@ -2,7 +2,7 @@ package skywolf46.microgamelib.data
 
 import skywolf46.extrautility.data.ArgumentStorage
 
-class GameInstanceData {
+class GameInstanceData(val gameName: String) {
 
     val gameStages = arrayListOf<GameStageData>()
     val gameStageMap = mutableMapOf<String, GameStageData>()

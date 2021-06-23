@@ -65,12 +65,13 @@ class MicroGameLib : JavaPlugin() {
             log("§c--- Inapplicable annotation \"@GameInstance\" and \"@GameStage\" detected in class ${cls.name}. To specify usage, remove collapsing annotation.")
         }
         val gameInstance = cls.getAnnotation(GameInstance::class.java)
-        GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.value) { GameInstanceData() }.apply {
-            isMultiStaged = gameInstance.allowMultiInstance
-            val stage = GameStageData(cls, gameInstance.value, gameInstance.value)
-            gameStageMap[gameInstance.value] = stage
-            gameStages.add(stage)
-        }
+        GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.value) { GameInstanceData(gameInstance.value) }
+            .apply {
+                isMultiStaged = gameInstance.allowMultiInstance
+                val stage = GameStageData(cls, gameInstance.value, gameInstance.value)
+                gameStageMap[gameInstance.value] = stage
+                gameStages.add(stage)
+            }
         log("§e--- Game instance §f\"${gameInstance.value}\" §e(${cls.name}, ${if (gameInstance.allowMultiInstance) "Multi-Staged" else "Single"}) registered")
     }
 
@@ -81,15 +82,16 @@ class MicroGameLib : JavaPlugin() {
             return
         }
 
-        GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.gameName) { GameInstanceData() }.apply {
-            if (gameStageMap.containsKey(gameInstance.value)) {
-                log("§c--- Cannot register Game stage §f\"${gameInstance.value}\" (${cls.name}) : Game stage name duplicated")
-                return
+        GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.gameName) { GameInstanceData(gameInstance.value) }
+            .apply {
+                if (gameStageMap.containsKey(gameInstance.value)) {
+                    log("§c--- Cannot register Game stage §f\"${gameInstance.value}\" (${cls.name}) : Game stage name duplicated")
+                    return
+                }
+                val stage = GameStageData(cls, gameInstance.gameName, gameInstance.value)
+                gameStageMap[gameInstance.value] = stage
+                gameStages.add(stage)
             }
-            val stage = GameStageData(cls, gameInstance.gameName, gameInstance.value)
-            gameStageMap[gameInstance.value] = stage
-            gameStages.add(stage)
-        }
         log("§e--- Game stage §f\"${gameInstance.value}\" §e(Priority ${gameInstance.stagePriority}) for ${gameInstance.gameName} registered")
     }
 
@@ -114,7 +116,7 @@ class MicroGameLib : JavaPlugin() {
 
     private fun loadGameConfiguration() {
         log("§e-- Loading minigame configurations")
-        with(File(dataFolder, "minigames")) {
+        with(File(dataFolder, "Stages")) {
             if (exists()) {
                 if (!isDirectory) {
                     println("§c--- Cannot load minigame configurations from directory : Target directory is file")
@@ -146,8 +148,9 @@ class MicroGameLib : JavaPlugin() {
                 log("§c-- Cannot load minigame configuration \"${file.name}\" : \"Data\" Configuration sector not exists in file ")
                 return@apply
             }
-            GameInstanceStorage.gameMap[loaded.getString("Game")] =
-                GameInstanceObject(this, gameConfiguration!!.loadFromSection(sector))
+            log("§e--- Loading minigame stage \"${loaded.getString("Stage")}\" (Game instance: ${loaded.getString("Game")})")
+            GameInstanceStorage.gameMap[loaded.getString("Stage")] =
+                GameInstanceObject(loaded.getString("Stage"), this, gameConfiguration!!.loadFromSection(sector))
         }
             ?: log("§c-- Cannot load minigame configuration \"${file.name}\" : Minigame ${loaded.getString("Game")} is not registered")
     }
@@ -166,7 +169,7 @@ class MicroGameLib : JavaPlugin() {
         log("§e-- Adding single instanced minigames.")
         for ((x, y) in GameInstanceStorage.gameMapData) {
             if (!y.isMultiStaged && GameInstanceStorage.getGameInstance(x) == null) {
-                GameInstanceStorage.gameMap[x] = GameInstanceObject(y, y.gameConfiguration!!)
+                GameInstanceStorage.gameMap[x] = GameInstanceObject(x, y, y.gameConfiguration!!)
                 log("§e--- Registered minigame instance \"$x\".")
             }
         }

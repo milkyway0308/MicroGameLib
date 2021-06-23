@@ -1,5 +1,6 @@
 package skywolf46.microgamelib.data
 
+import skywolf46.extrautility.data.ArgumentStorage
 import skywolf46.extrautility.util.ConstructorInvoker
 import skywolf46.extrautility.util.MethodInvoker
 import skywolf46.extrautility.util.MethodUtil
@@ -25,5 +26,16 @@ class GameStageData(val target: Class<*>, val gameName: String, val stageName: S
         filter.filter(InGameListener::class.java).methods.forEach {
             innerListeners += MethodInvoker(it)
         }
+    }
+
+    fun constructStage(config: ConfigurationStructure): Any {
+        if(config.getUndeclaredFields().isNotEmpty())
+            throw IllegalStateException("")
+        val storage = ArgumentStorage()
+        storage.addArgument(config.constructToInstance())
+
+        val cls = constructedInvoker.call(storage)
+        // TODO
+        return cls!!
     }
 }
