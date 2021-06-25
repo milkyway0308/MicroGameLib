@@ -6,26 +6,31 @@ import skywolf46.asyncdataloader.core.abstraction.loader.AbstractDataSnapshot
 import skywolf46.asyncdataloader.file.impl.BukkitYamlBasedSnapshot
 import skywolf46.asyncdataloader.file.impl.loadBukkitYaml
 import skywolf46.microgamelib.MicroGameLib
+import skywolf46.microgamelib.enums.InjectScope
 import skywolf46.microgamelib.storage.InjectReference
+import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 import java.io.File
 
 class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
 
-    private val arguments = InjectReference()
     var gameStagePointer = 0
     lateinit var config: ConfigurationStructure
 
-    val stageName: String
+    val instanceName: String
     val gameData: GameInstanceData
 
+    var projectArgument: InjectReference? = null
+    var stageArgument: InjectReference? = null
+    var currentStage: Any? = null
+
     constructor(stageName: String, gameData: GameInstanceData) {
-        this.stageName = stageName
+        this.instanceName = stageName
         this.gameData = gameData
         init()
     }
 
-    constructor(stageName: String, gameData: GameInstanceData, config: ConfigurationStructure)  {
-        this.stageName = stageName
+    constructor(stageName: String, gameData: GameInstanceData, config: ConfigurationStructure) {
+        this.instanceName = stageName
         this.gameData = gameData
         this.config = config
         loaded.set(LoadState.EMPTY_LOAD)
@@ -33,15 +38,11 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
     }
 
     private fun init() {
-        arguments.addArgument(gameData)
-        arguments.addArgument(this)
         if (!loaded.get().isLoadedState) {
-            loadBukkitYaml(File(MicroGameLib.inst.dataFolder, "Stages/$stageName")) {
+            loadBukkitYaml(File(MicroGameLib.inst.dataFolder, "Stages/$instanceName")) {
                 config = gameData.gameConfiguration!!.loadFromSection(this)
-                arguments.addArgument(config)
             }
-        } else
-            arguments.addArgument(config)
+        }
     }
 
 
@@ -51,16 +52,49 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
 
 
     override fun snapshot(): AbstractDataSnapshot {
-        return object : BukkitYamlBasedSnapshot(File(MicroGameLib.inst.dataFolder, "Stages/$stageName")) {
+        return object : BukkitYamlBasedSnapshot(File(MicroGameLib.inst.dataFolder, "Stages/$instanceName")) {
             override fun trigger(isFinalizing: Boolean) {
                 yaml {
                     this["Game"] = gameData.gameName
-                    this["Stage"] = stageName
+                    this["Stage"] = instanceName
                     config.saveToSection(this.createSection("Data"))
                 }
             }
-
         }
+    }
+
+    fun getGameStage() = gameStagePointer
+
+    fun getGameStageObject() = gameData.getStage(gameStagePointer)
+
+    fun start() {
+        gameStagePointer = -1
+        projectArgument = InjectorClassManagerStorage.globalVariable.shallowCopy(false).apply {
+            addArgument(config.constructToInstance())
+            addArgument(this@GameInstanceObject)
+        }
+        nextStage()
+    }
+
+    fun nextStage() {
+        if (++gameStagePointer >= gameData.gameStages.size) {
+            reset()
+            return
+        }
+        if (stageArgument != null)
+            projectArgument!!.removeProxy(stageArgument!!)
+        stageArgument = InjectReference()
+        InjectorClassManagerStorage.of(InjectScope.GAME).applyReferences(projectArgument, stageArgument!!)
+        currentStage = getGameStageObject().constructStage(projectArgument!!)
+        println("Stage: $currentStage")
+    }
+
+
+    fun reset() {
+        gameStagePointer = 0
+        projectArgument = null
+        stageArgument = null
+        println("Stop stage")
     }
 
 }

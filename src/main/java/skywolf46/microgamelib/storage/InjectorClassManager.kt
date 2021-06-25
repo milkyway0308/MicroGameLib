@@ -15,7 +15,7 @@ class InjectorClassManager : ArrayList<PriorityReference<Class<*>>>() {
     }
 
 
-    fun applyReferences(storageParent: InjectReference?, storage: InjectReference, debug: Boolean = false) {
+    fun applyReferences(storageParent: ArgumentStorage?, storage: InjectReference, debug: Boolean = false) {
         storage.inject(storageParent, kotlin.run {
             val lst = mutableListOf<ConstructorInvoker>()
             for (x in this) {

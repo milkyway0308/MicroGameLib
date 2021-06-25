@@ -20,7 +20,7 @@ dependencies {
     compileOnly "skywolf46:asyncdataloader-core:3.0.0.38"
     compileOnly "skywolf46:asyncdataloader-file:3.0.0.38"
     compileOnly "skywolf46:placeholders:1.6.3"
-    compileOnly "skywolf46:exutil:1.46.0"
+    compileOnly "skywolf46:exutil:1.46.2"
 }
 
 publishing {

@@ -4,6 +4,6 @@ import skywolf46.microgamelib.annotations.InjectTarget
 import skywolf46.microgamelib.enums.InjectScope
 
 @InjectTarget(InjectScope.GLOBAL)
-class GameStatistics {
+class GameStatistics : HashMap<String, Int>(){
 
 }

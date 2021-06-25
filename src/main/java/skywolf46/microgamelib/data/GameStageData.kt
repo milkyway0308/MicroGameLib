@@ -1,18 +1,17 @@
 package skywolf46.microgamelib.data
 
-import skywolf46.extrautility.data.ArgumentStorage
+import skywolf46.extrautility.util.ClassUtil.iterateParentClasses
 import skywolf46.extrautility.util.ConstructorInvoker
 import skywolf46.extrautility.util.MethodInvoker
 import skywolf46.extrautility.util.MethodUtil
 import skywolf46.microgamelib.annotations.InGameListener
+import skywolf46.microgamelib.storage.InjectReference
 import java.lang.IllegalStateException
 import java.lang.IndexOutOfBoundsException
 import java.lang.reflect.Field
 
-class GameStageData(val target: Class<*>, val gameName: String, val stageName: String) {
-    val innerListeners = mutableListOf<MethodInvoker>()
+class GameStageData(val instance: GameInstanceData, val stageName: String, val target: Class<*>) {
     val innerFinalizer = mutableListOf<MethodInvoker>()
-    val innerInjects = mutableListOf<Field>()
     val constructedInvoker: ConstructorInvoker
 
     init {
@@ -22,20 +21,21 @@ class GameStageData(val target: Class<*>, val gameName: String, val stageName: S
             System.err.println("Cannot load stage ${target.name} : All constructor is private")
             throw IllegalStateException()
         }
-        val filter = MethodUtil.filter(target)
+        val filter = MethodUtil.filter(*mutableListOf<Class<*>>().apply {
+            target.iterateParentClasses {
+                add(this)
+            }
+        }.toTypedArray())
         filter.filter(InGameListener::class.java).methods.forEach {
             innerListeners += MethodInvoker(it)
+            println("Registered ${it.method.declaringClass.name}#${it.method.name}")
         }
     }
 
-    fun constructStage(config: ConfigurationStructure): Any {
-        if(config.getUndeclaredFields().isNotEmpty())
-            throw IllegalStateException("")
-        val storage = ArgumentStorage()
-        storage.addArgument(config.constructToInstance())
-
-        val cls = constructedInvoker.call(storage)
-        // TODO
-        return cls!!
+    fun constructStage(argument: InjectReference): Any {
+        val data = constructedInvoker.call(argument)
+        // Add global proxy.
+        argument.injectTo(data!!)
+        return data
     }
 }

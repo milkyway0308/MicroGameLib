@@ -5,13 +5,12 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.plugin.EventExecutor
-import org.bukkit.plugin.SimplePluginManager
 import skywolf46.extrautility.data.ArgumentStorage
 import skywolf46.extrautility.util.MethodInvoker
 import skywolf46.microgamelib.MicroGameLib
 import java.lang.IllegalStateException
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 class DynamicEventListener(val event: Class<Event>, val priority: EventPriority) {
     companion object {
@@ -36,10 +35,12 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
             { _, ev -> onEvent(ev) }, MicroGameLib.inst)
     }
 
-    fun addListener(mtd: MethodInvoker, condition: (Entity) -> Boolean): EventInvoker {
-        val invoker = EventInvoker(condition, mtd)
-        listeners += invoker
-        return invoker
+    fun create(mtd: Method): EventInvokerReady {
+        return EventInvokerReady(mtd, {
+            listeners += this
+        }) {
+            listeners -= this
+        }
     }
 
     fun onEvent(ev: Any) {
@@ -53,8 +54,6 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
             }
         }
         val entityList = eventArgument[Entity::class.java]
-        if (entityList == null)
-            return
         for (entity in entityList) {
             for ((x, y) in listeners) {
                 if (x.invoke(entity as Entity)) {

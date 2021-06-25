@@ -57,6 +57,11 @@ object GameManageCommand {
 
     @MinecraftCommand("/mglib game <string> start")
     fun Arguments.onStart(sender: CommandSender) {
+        args<String>(false) { stageName ->
+            GameInstanceStorage.getGameInstance(stageName)?.apply {
+                start()
 
+            } ?: sender.sendMessage("§cCannot start game instance \"$stageName\" : Instance not registered")
+        }
     }
 }

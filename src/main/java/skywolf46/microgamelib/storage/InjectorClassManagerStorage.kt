@@ -18,6 +18,10 @@ object InjectorClassManagerStorage {
         }.add(PriorityReference(cls, annotation.injectPriority))
     }
 
+    fun of(scopeEnum: InjectScope): InjectorClassManager {
+        return scope[scopeEnum]!!
+    }
+
     fun finalizeGlobalInject() {
         (scope[InjectScope.GLOBAL] ?: InjectorClassManager()).applyReferences(null, globalVariable, true)
     }

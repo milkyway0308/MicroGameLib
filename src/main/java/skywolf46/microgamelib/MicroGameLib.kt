@@ -68,7 +68,7 @@ class MicroGameLib : JavaPlugin() {
         GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.value) { GameInstanceData(gameInstance.value) }
             .apply {
                 isMultiStaged = gameInstance.allowMultiInstance
-                val stage = GameStageData(cls, gameInstance.value, gameInstance.value)
+                val stage = GameStageData(this, gameInstance.value, cls)
                 gameStageMap[gameInstance.value] = stage
                 gameStages.add(stage)
             }
@@ -88,7 +88,7 @@ class MicroGameLib : JavaPlugin() {
                     log("§c--- Cannot register Game stage §f\"${gameInstance.value}\" (${cls.name}) : Game stage name duplicated")
                     return
                 }
-                val stage = GameStageData(cls, gameInstance.gameName, gameInstance.value)
+                val stage = GameStageData(this, gameInstance.value, cls)
                 gameStageMap[gameInstance.value] = stage
                 gameStages.add(stage)
             }
