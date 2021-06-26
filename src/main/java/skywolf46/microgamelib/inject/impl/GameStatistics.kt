@@ -9,8 +9,4 @@ import skywolf46.microgamelib.enums.InjectScope
 @InjectTarget(InjectScope.GLOBAL)
 class GameStatistics : HashMap<String, Int>() {
 
-    @InGameListener
-    fun PlayerChatEvent.onEvent() {
-        println("Hello, global listener!")
-    }
 }

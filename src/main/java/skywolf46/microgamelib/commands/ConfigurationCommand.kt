@@ -113,7 +113,6 @@ object ConfigurationCommand {
     // Min - 2 arguments
     @MinecraftCommand("$GLOBAL_GAME_PREFIX insert <string> <string> <string>")
     fun Arguments.onInsertValue(sender: CommandSender) {
-        println("Inserting")
         args<String>(false) { stageName ->
             GameInstanceStorage.getGameInstance(stageName)?.let { stage ->
                 args<String>(false) { fieldName ->
@@ -131,8 +130,7 @@ object ConfigurationCommand {
                         sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is not Map; use $GLOBAL_GAME_PREFIX set <FieldName> <Value(Any)> instead.")
                         return
                     }
-                    println(configField.argumentTypes.contentToString())
-                    val mapKey = args<String>()!!
+                   val mapKey = args<String>()!!
                     args(configField.argumentTypes[1].kotlin, false) { argument ->
                         val next = stage.config.declaredVariables[fieldName] as MutableMap<String, Any>?
                             ?: mutableMapOf<String, Any>().apply {

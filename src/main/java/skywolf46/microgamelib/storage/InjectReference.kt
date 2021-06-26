@@ -46,7 +46,6 @@ class InjectReference : ArgumentStorage() {
     }
 
     fun registerAllListeners(target: Any, args: InjectReference, stage: GameInstanceObject?) {
-        println("Registering ${target.javaClass}")
         storagesListener.computeIfAbsent(target.javaClass) {
             CachedInGameListeners(it)
         }.register(args, target) {
@@ -101,11 +100,9 @@ class InjectReference : ArgumentStorage() {
 
         init {
             for (x in cls.declaredMethods) {
-                println(x.name)
                 x.getAnnotation(InGameListener::class.java)?.apply {
                     try {
                         x.isAccessible = true
-                        println("Scanning ${x.name}")
                         getScopedList(InjectScope.STAGE)
                             .add(DynamicEventListener.eventOf(x.parameters[0].type as Class<Event>,
                                 priority)
@@ -117,7 +114,6 @@ class InjectReference : ArgumentStorage() {
                 }
             }
             for (x in cls.declaredFields) {
-                println("Field: ${x.name}")
                 x.getAnnotation(Extract::class.java)?.apply {
                     x.isAccessible = true
                     extractFields.add(this to x)
@@ -132,6 +128,8 @@ class InjectReference : ArgumentStorage() {
         fun register(ref: InjectReference, instance: Any, condition: (Entity) -> Boolean): List<EventInvoker> {
             val invokers = mutableListOf<EventInvoker>()
             register(ref, instance, condition, mutableListOf())
+            println("Registering instance ${instance.javaClass.name}")
+            Thread.dumpStack()
             return invokers
         }
 
@@ -149,7 +147,6 @@ class InjectReference : ArgumentStorage() {
             attachGameListener(ref, instance, condition)
             attachStageListener(ref, instance, condition)
             extractFields.forEach { x ->
-                println("Extr field: ${x.second.name}}")
                 ref.registerAllListeners(x.second.get(instance), ref, ref[GameInstanceObject::class.java].run {
                     if (isEmpty())
                         null
@@ -183,8 +180,6 @@ class InjectReference : ArgumentStorage() {
         ) {
             val watcher = ref[GameInstanceWatcher::class].apply {
                 if (isEmpty()) {
-                    println("Game instance empty; Register rejected.")
-                    println("Current proxies: ${ref.proxies}")
                     return
                 }
             }[0]
@@ -192,6 +187,7 @@ class InjectReference : ArgumentStorage() {
             if (watcher.isInitialized(cls))
                 return
             watcher.watchInitialized(cls)
+
             if (InjectScope.GAME in currentInvoker) {
                 for (y in currentInvoker[InjectScope.GAME]!!) {
                     (ref.getProxies()[0] as InjectReference).registerListener(y.register(instance, condition) {

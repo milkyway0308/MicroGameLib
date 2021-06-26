@@ -2,6 +2,7 @@ package skywolf46.microgamelib.inject.impl
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockBreakEvent
 import skywolf46.extrautility.util.callEvent
 import skywolf46.extrautility.util.removeValue
 import skywolf46.extrautility.util.set
@@ -42,7 +43,7 @@ open class GameParty(private val parent: GameParty?) {
     }
 
     @InGameListener
-    fun onListen() {
-
+    fun BlockBreakEvent.onListen() {
+        println("Hello world")
     }
 }
