@@ -23,6 +23,6 @@ object InjectorClassManagerStorage {
     }
 
     fun finalizeGlobalInject() {
-        (scope[InjectScope.GLOBAL] ?: InjectorClassManager()).applyReferences(null, globalVariable, true)
+        (scope[InjectScope.GLOBAL] ?: InjectorClassManager()).applyReferences(null, globalVariable, null,true)
     }
 }

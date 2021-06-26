@@ -5,6 +5,7 @@ import skywolf46.extrautility.util.ClassUtil
 import skywolf46.extrautility.util.ClassUtil.iterateParentClasses
 import skywolf46.extrautility.util.ConstructorInvoker
 import skywolf46.extrautility.util.PriorityReference
+import skywolf46.microgamelib.data.GameInstanceObject
 
 class InjectorClassManager : ArrayList<PriorityReference<Class<*>>>() {
 
@@ -15,8 +16,13 @@ class InjectorClassManager : ArrayList<PriorityReference<Class<*>>>() {
     }
 
 
-    fun applyReferences(storageParent: ArgumentStorage?, storage: InjectReference, debug: Boolean = false) {
-        storage.inject(storageParent, kotlin.run {
+    fun applyReferences(
+        storageParent: ArgumentStorage?,
+        storage: InjectReference,
+        stage: GameInstanceObject?,
+        debug: Boolean = false,
+    ) {
+        storage.inject(storageParent, stage, kotlin.run {
             val lst = mutableListOf<ConstructorInvoker>()
             for (x in this) {
                 lst.add(ConstructorInvoker(x.data.constructors[0]))

@@ -69,7 +69,8 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
 
     fun start() {
         gameStagePointer = -1
-        projectArgument = InjectorClassManagerStorage.globalVariable.shallowCopy(false).apply {
+        projectArgument = InjectReference().apply {
+            addProxy(InjectorClassManagerStorage.globalVariable)
             addArgument(config.constructToInstance())
             addArgument(this@GameInstanceObject)
             addArgument(GameInstanceWatcher())
@@ -82,18 +83,23 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
             reset()
             return
         }
-        if (stageArgument != null)
+        if (stageArgument != null) {
             projectArgument!!.removeProxy(stageArgument!!)
+            stageArgument!!.unregisterAllListener()
+        }
         stageArgument = InjectReference()
-        InjectorClassManagerStorage.of(InjectScope.GAME).applyReferences(projectArgument, stageArgument!!)
-        stageArgument!!.registerAllListeners()
+
+        InjectorClassManagerStorage.of(InjectScope.GAME).applyReferences(projectArgument, stageArgument!!, this)
         currentStage = getGameStageObject().constructStage(projectArgument!!)
+        stageArgument!!.registerAllListeners(currentStage!!, projectArgument!!, this)
         println("Stage: $currentStage")
     }
 
 
     fun reset() {
         gameStagePointer = 0
+        stageArgument!!.unregisterAllListener()
+        projectArgument!!.unregisterAllListener()
         projectArgument = null
         stageArgument = null
         println("Stop stage")

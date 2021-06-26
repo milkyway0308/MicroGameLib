@@ -1,6 +1,7 @@
 package skywolf46.microgamelib.test
 
 import skywolf46.extrautility.util.schedule
+import skywolf46.microgamelib.annotations.Extract
 import skywolf46.microgamelib.annotations.GameStage
 import skywolf46.microgamelib.annotations.Inject
 import skywolf46.microgamelib.data.GameInstanceObject
@@ -13,11 +14,13 @@ class TestGameStage(
     init {
         println("Game stage started! ${configuration.systemVersion}")
         configuration.systemVersion += 3
-        schedule(20L) {
+        schedule(70L) {
             stage.nextStage()
         }
     }
 
-    @Inject
-    lateinit var test : AtomicInteger
+    @Extract
+    var test: TestListenerObject = TestListenerObject()
+
+
 }
