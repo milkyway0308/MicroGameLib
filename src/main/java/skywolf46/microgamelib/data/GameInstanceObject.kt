@@ -90,8 +90,8 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
         stageArgument = InjectReference()
 
         InjectorClassManagerStorage.of(InjectScope.GAME).applyReferences(projectArgument, stageArgument!!, this)
-        currentStage = getGameStageObject().constructStage(projectArgument!!)
-        stageArgument!!.registerAllListeners(currentStage!!, projectArgument!!, this)
+        currentStage = getGameStageObject().constructStage(stageArgument!!)
+        stageArgument!!.registerAllListeners(currentStage!!, stageArgument!!, this)
         println("Stage: $currentStage")
     }
 

@@ -33,27 +33,20 @@ class InjectReference : ArgumentStorage() {
                 val created = x.call(this)
                 injectTo(created!!)
                 addArgument(created)
-                afterCall += x
+                afterCall += created
             } catch (e: Exception) {
                 System.err.println("Failed to create instance of ${x.constructor.declaringClass.name} : ${e.javaClass.name} (${e.message})")
                 e.printStackTrace()
             }
         }
         // Register listener
-
-        // Cleanup proxy, bind to parent
-        if (topParent != null) {
-            removeProxy(topParent)
-            topParent.addProxy(this)
-        }
-
         for (x in afterCall) {
             registerAllListeners(x, (topParent ?: this) as InjectReference, stage)
         }
     }
 
     fun registerAllListeners(target: Any, args: InjectReference, stage: GameInstanceObject?) {
-        println("Registering ${target}")
+        println("Registering ${target.javaClass}")
         storagesListener.computeIfAbsent(target.javaClass) {
             CachedInGameListeners(it)
         }.register(args, target) {
@@ -104,13 +97,14 @@ class InjectReference : ArgumentStorage() {
     private class CachedInGameListeners(val cls: Class<*>) {
         // LifeCycle, Prepare
         val currentInvoker = mutableMapOf<InjectScope, MutableList<EventInvokerReady>>()
-        val injectFields = mutableListOf<Class<*>>()
         val extractFields = mutableListOf<Pair<Extract, Field>>()
 
         init {
-            for (x in cls.methods) {
+            for (x in cls.declaredMethods) {
+                println(x.name)
                 x.getAnnotation(InGameListener::class.java)?.apply {
                     try {
+                        x.isAccessible = true
                         println("Scanning ${x.name}")
                         getScopedList(InjectScope.STAGE)
                             .add(DynamicEventListener.eventOf(x.parameters[0].type as Class<Event>,
@@ -156,7 +150,7 @@ class InjectReference : ArgumentStorage() {
             attachStageListener(ref, instance, condition)
             extractFields.forEach { x ->
                 println("Extr field: ${x.second.name}}")
-                ref.registerAllListeners(x.second.get(instance), ref, ref.get(GameInstanceObject::class.java).run {
+                ref.registerAllListeners(x.second.get(instance), ref, ref[GameInstanceObject::class.java].run {
                     if (isEmpty())
                         null
                     else

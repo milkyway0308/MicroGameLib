@@ -21,6 +21,4 @@ class TestGameStage(
 
     @Extract
     var test: TestListenerObject = TestListenerObject()
-
-
 }
