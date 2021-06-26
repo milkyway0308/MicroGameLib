@@ -26,10 +26,7 @@ class GameStageData(val instance: GameInstanceData, val stageName: String, val t
                 add(this)
             }
         }.toTypedArray())
-        filter.filter(InGameListener::class.java).methods.forEach {
-            innerListeners += MethodInvoker(it)
-            println("Registered ${it.method.declaringClass.name}#${it.method.name}")
-        }
+        // Change to inner listener
     }
 
     fun constructStage(argument: InjectReference): Any {

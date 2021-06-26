@@ -72,6 +72,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
         projectArgument = InjectorClassManagerStorage.globalVariable.shallowCopy(false).apply {
             addArgument(config.constructToInstance())
             addArgument(this@GameInstanceObject)
+            addArgument(GameInstanceWatcher())
         }
         nextStage()
     }
@@ -85,6 +86,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
             projectArgument!!.removeProxy(stageArgument!!)
         stageArgument = InjectReference()
         InjectorClassManagerStorage.of(InjectScope.GAME).applyReferences(projectArgument, stageArgument!!)
+        stageArgument!!.registerAllListeners()
         currentStage = getGameStageObject().constructStage(projectArgument!!)
         println("Stage: $currentStage")
     }

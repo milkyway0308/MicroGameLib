@@ -5,8 +5,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.extrautility.data.ArgumentStorage
-import skywolf46.extrautility.util.MethodInvoker
 import skywolf46.microgamelib.MicroGameLib
 import java.lang.IllegalStateException
 import java.lang.reflect.Field
@@ -29,8 +29,8 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
                 targetEntityFields += x
             }
         }
-        if (targetEntityFields.isEmpty())
-            throw IllegalStateException("Cannot listen event ${event.name} : Event not contains \"org.bukkit.Entity\" implementing field")
+//        if (targetEntityFields.isEmpty())
+//            throw IllegalStateException("Cannot listen event ${event.name} : Event not contains \"org.bukkit.Entity\" implementing field")
         Bukkit.getPluginManager().registerEvent(event, EmptyListener, priority,
             { _, ev -> onEvent(ev) }, MicroGameLib.inst)
     }
@@ -48,18 +48,26 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
             throw IllegalStateException("Cannot call event ${event.name} : Object ${ev.javaClass.name} provided, Cannot cast object")
         }
         val eventArgument = ArgumentStorage()
-        for (enField in targetEntityFields) {
-            enField[ev]?.apply {
-                eventArgument.addArgument(this)
-            }
-        }
-        val entityList = eventArgument[Entity::class.java]
-        for (entity in entityList) {
-            for ((x, y) in listeners) {
-                if (x.invoke(entity as Entity)) {
-                    y.invoke(eventArgument)
+        eventArgument.addArgument(ev)
+
+        if (targetEntityFields.isEmpty()) {
+            for (y in listeners)
+                y.method.invoke(eventArgument)
+        } else {
+            for (enField in targetEntityFields) {
+                enField[ev]?.apply {
+                    eventArgument.addArgument(this)
                 }
             }
+            val entityList = eventArgument[Entity::class.java]
+            for (entity in entityList) {
+                for ((x, y) in listeners) {
+                    if (x.invoke(entity)) {
+                        y.invoke(eventArgument)
+                    }
+                }
+            }
+
         }
     }
 
