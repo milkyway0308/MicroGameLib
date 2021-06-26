@@ -31,7 +31,8 @@ class InjectReference : ArgumentStorage() {
         for (x in invoker) {
             try {
                 val created = x.call(this)
-                injectTo(created!!)
+                println("Constructed ${created!!.javaClass}")
+                injectTo(created)
                 addArgument(created)
                 afterCall += created
             } catch (e: Exception) {
@@ -41,7 +42,8 @@ class InjectReference : ArgumentStorage() {
         }
         // Register listener
         for (x in afterCall) {
-            registerAllListeners(x, (topParent ?: this) as InjectReference, stage)
+            println("AfterCall: ${x.javaClass.name}")
+            registerAllListeners(x, this, stage)
         }
     }
 
@@ -129,7 +131,6 @@ class InjectReference : ArgumentStorage() {
             val invokers = mutableListOf<EventInvoker>()
             register(ref, instance, condition, mutableListOf())
             println("Registering instance ${instance.javaClass.name}")
-            Thread.dumpStack()
             return invokers
         }
 
