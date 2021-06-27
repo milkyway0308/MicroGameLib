@@ -1,11 +1,12 @@
-package skywolf46.microgamelib.events
+package skywolf46.microgamelib.events.playerEvent
 
-import org.bukkit.event.Event
+import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
-import skywolf46.microgamelib.data.GameInstanceObject
-import skywolf46.microgamelib.data.GameStageData
+import org.bukkit.event.player.PlayerEvent
 
-class StageChangedEvent(val stage: GameInstanceObject) : Event() {
+class GameAfterJoinEvent(player: Player) : PlayerEvent(player) {
+
+
     override fun getHandlers(): HandlerList {
         return _handle
     }
@@ -18,6 +19,4 @@ class StageChangedEvent(val stage: GameInstanceObject) : Event() {
             return _handle
         }
     }
-
-
 }

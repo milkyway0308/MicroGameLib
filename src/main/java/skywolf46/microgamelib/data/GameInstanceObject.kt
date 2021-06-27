@@ -5,8 +5,13 @@ import skywolf46.asyncdataloader.core.abstraction.loader.AbstractDataLoader
 import skywolf46.asyncdataloader.core.abstraction.loader.AbstractDataSnapshot
 import skywolf46.asyncdataloader.file.impl.BukkitYamlBasedSnapshot
 import skywolf46.asyncdataloader.file.impl.loadBukkitYaml
+import skywolf46.extrautility.util.callEvent
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.enums.InjectScope
+import skywolf46.microgamelib.events.gameEvent.GameAfterEndedEvent
+import skywolf46.microgamelib.events.gameEvent.GameEndedEvent
+import skywolf46.microgamelib.events.gameEvent.GameRestartEvent
+import skywolf46.microgamelib.events.gameEvent.GameStartedEvent
 import skywolf46.microgamelib.storage.InjectReference
 import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 import java.io.File
@@ -69,15 +74,15 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
 
     fun start() {
         gameStagePointer = -1
-        projectArgument = InjectReference()
-        InjectorClassManagerStorage.of(InjectScope.GAME)
-            .applyReferences(InjectorClassManagerStorage.globalVariable, projectArgument!!, this)
-        projectArgument!!.apply {
+        projectArgument = InjectReference().apply {
             addProxy(InjectorClassManagerStorage.globalVariable)
             addArgument(config.constructToInstance())
             addArgument(this@GameInstanceObject)
             addArgument(GameInstanceWatcher())
         }
+        InjectorClassManagerStorage.of(InjectScope.GAME)
+            .applyReferences(InjectorClassManagerStorage.globalVariable, projectArgument!!, this)
+        GameStartedEvent(this).callEvent()
         nextStage()
     }
 
@@ -100,14 +105,17 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
     }
 
 
-    fun reset() {
+    private fun reset() {
+        GameEndedEvent(this).callEvent()
         gameStagePointer = 0
         stageArgument!!.unregisterAllListener()
         projectArgument!!.unregisterAllListener()
         projectArgument = null
         stageArgument = null
         println("Stop stage")
+        GameAfterEndedEvent(this).callEvent()
         if (gameData.alwaysStarted) {
+            GameRestartEvent(this).callEvent()
             start()
         }
     }

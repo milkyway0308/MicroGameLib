@@ -84,7 +84,7 @@ class InjectReference : ArgumentStorage() {
                 if (list.isEmpty()) {
                     continue
                 }
-                for (count in 0 until y.size.coerceAtLeast(list.size)) {
+                for (count in y.indices) {
                     y[count].set(target, list[0])
                 }
             }
@@ -92,7 +92,7 @@ class InjectReference : ArgumentStorage() {
     }
 
     fun unregisterAllListener() {
-        injectedListeners.forEach { x ->
+        ArrayList(injectedListeners).forEach { x ->
             x.unregister()
         }
     }
@@ -110,24 +110,31 @@ class InjectReference : ArgumentStorage() {
         val extractFields = mutableListOf<Pair<Extract, Field>>()
 
         init {
-            for (x in cls.declaredMethods) {
-                x.getAnnotation(InGameListener::class.java)?.apply {
-                    try {
-                        x.isAccessible = true
-                        getScopedList(InjectScope.STAGE)
-                            .add(DynamicEventListener.eventOf(x.parameters[0].type as Class<Event>,
-                                priority)
-                                .create(x)
-                            )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+            val parentCls = mutableListOf<Class<*>>()
+            cls.iterateParentClasses {
+                parentCls += this
+            }
+            // Scanned from top class
+            parentCls.asReversed().forEach { cls ->
+                for (x in cls.declaredMethods) {
+                    x.getAnnotation(InGameListener::class.java)?.apply {
+                        try {
+                            x.isAccessible = true
+                            getScopedList(InjectScope.STAGE)
+                                .add(DynamicEventListener.eventOf(x.parameters[0].type as Class<Event>,
+                                    priority)
+                                    .create(x)
+                                )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
-            }
-            for (x in cls.declaredFields) {
-                x.getAnnotation(Extract::class.java)?.apply {
-                    x.isAccessible = true
-                    extractFields.add(this to x)
+                for (x in cls.declaredFields) {
+                    x.getAnnotation(Extract::class.java)?.apply {
+                        x.isAccessible = true
+                        extractFields.add(this to x)
+                    }
                 }
             }
         }
@@ -247,7 +254,9 @@ class InjectReference : ArgumentStorage() {
             cls.iterateParentClasses {
                 for (x in this.declaredFields) {
                     x.getAnnotation(Inject::class.java)?.apply {
-                        injectFields.computeIfAbsent(x.type) { mutableListOf() }.add(x)
+                        injectFields.computeIfAbsent(x.type) { mutableListOf() }.add(x.apply {
+                            x.isAccessible = true
+                        })
                     }
                 }
             }

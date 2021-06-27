@@ -52,7 +52,7 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
         val eventArgument = ArgumentStorage()
         eventArgument.addArgument(ev)
         if (targetEntityFields.isEmpty()) {
-            for (y in listeners)
+            for (y in ArrayList(listeners))
                 y.method.invoke(eventArgument)
         } else {
             for (enField in targetEntityFields) {
@@ -61,14 +61,14 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
                 }
             }
             val entityList = eventArgument[Entity::class.java]
-            for (entity in entityList) {
-                for ((x, y) in listeners) {
-                    if (x.invoke(entity)) {
-                        y.invoke(eventArgument)
-                    }
-                }
+            listeners.filter {
+                for (x in entityList)
+                    if (it.condition.invoke(x))
+                        return@filter true
+                return@filter false
+            }.forEach {
+                it.method.invoke(eventArgument)
             }
-
         }
     }
 

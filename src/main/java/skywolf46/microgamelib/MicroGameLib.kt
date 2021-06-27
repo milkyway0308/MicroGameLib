@@ -37,6 +37,7 @@ class MicroGameLib : JavaPlugin() {
         loadGameConfiguration()
         validateGames()
         checkSingleInstanceGames()
+        finalizeAlwaysEnabledGames()
     }
 
     private fun scanClasses(classes: List<Class<*>>): List<Class<*>> {

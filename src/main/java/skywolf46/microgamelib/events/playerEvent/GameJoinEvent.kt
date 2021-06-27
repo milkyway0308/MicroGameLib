@@ -1,4 +1,4 @@
-package skywolf46.microgamelib.events
+package skywolf46.microgamelib.events.playerEvent
 
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable

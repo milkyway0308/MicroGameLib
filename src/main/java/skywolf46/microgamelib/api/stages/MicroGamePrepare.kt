@@ -2,8 +2,8 @@ package skywolf46.microgamelib.api.stages
 
 import org.bukkit.event.EventPriority
 import skywolf46.microgamelib.annotations.InGameListener
-import skywolf46.microgamelib.events.GameAfterJoinEvent
-import skywolf46.microgamelib.events.GameJoinEvent
+import skywolf46.microgamelib.events.playerEvent.GameAfterJoinEvent
+import skywolf46.microgamelib.events.playerEvent.GameJoinEvent
 
 abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractGameBase() {
 
@@ -11,13 +11,13 @@ abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractGameBas
     fun GameJoinEvent.onEvent() {
         if (isCancelledFromFramework()) {
             isCancelled = false
-            println("Cancelled! Ignoring.")
         }
     }
 
-    @InGameListener()
+    @InGameListener
     fun GameAfterJoinEvent.onPrepare() {
-        if (party.players.size >= requiredPlayers) {
+        println("Party event!")
+        if (party.size()>= requiredPlayers) {
             instance.nextStage()
         }
     }

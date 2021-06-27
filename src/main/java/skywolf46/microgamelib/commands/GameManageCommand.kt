@@ -59,7 +59,7 @@ object GameManageCommand {
     fun Arguments.onJoin(player: Player) {
         args<String>(false) { stageName ->
             GameInstanceStorage.getGameInstance(stageName)?.let { stage ->
-                if (stage.gameData.alwaysStarted) {
+                if (!stage.gameData.alwaysStarted) {
                     player.sendMessage("§cOperation not supported : Join feature only supports for always-enabled games")
                     return
                 }
@@ -81,7 +81,7 @@ object GameManageCommand {
     fun Arguments.onStart(sender: CommandSender) {
         args<String>(false) { stageName ->
             GameInstanceStorage.getGameInstance(stageName)?.apply {
-                if (!gameData.alwaysStarted) {
+                if (gameData.alwaysStarted) {
                     sender.sendMessage("§cOperation not supported : Start feature not supports to always-enabled games")
                     return
                 }
