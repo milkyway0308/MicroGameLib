@@ -92,11 +92,9 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
         }
         stageArgument = InjectReference()
 
-        // Error in here
         InjectorClassManagerStorage.of(InjectScope.STAGE).applyReferences(projectArgument, stageArgument!!, this)
         currentStage = getGameStageObject().constructStage(stageArgument!!)
         stageArgument!!.registerAllListeners(currentStage!!, stageArgument!!, this)
-        println("Stage: $currentStage")
     }
 
 

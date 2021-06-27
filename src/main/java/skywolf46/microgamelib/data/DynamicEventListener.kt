@@ -24,9 +24,11 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
     val listeners = mutableListOf<EventInvoker>()
 
     init {
-        for (x in event.fields) {
+        for (x in event.declaredFields) {
             if (Entity::class.java.isAssignableFrom(x.type)) {
+                x.isAccessible = true
                 targetEntityFields += x
+
             }
         }
 //        if (targetEntityFields.isEmpty())
@@ -49,7 +51,6 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
         }
         val eventArgument = ArgumentStorage()
         eventArgument.addArgument(ev)
-
         if (targetEntityFields.isEmpty()) {
             for (y in listeners)
                 y.method.invoke(eventArgument)

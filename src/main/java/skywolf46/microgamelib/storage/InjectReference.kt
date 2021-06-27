@@ -26,12 +26,10 @@ class InjectReference : ArgumentStorage() {
         // Temporary add proxy to get all values from project
         if (topParent != null)
             addProxy(topParent)
-        println("Top parent: ${topParent} / Proxies ${proxies}")
         val afterCall = mutableListOf<Any>()
         for (x in invoker) {
             try {
-                val created = x.call(this)
-                println("Constructed ${created!!.javaClass}")
+                val created = x.call(this)!!
                 injectTo(created)
                 addArgument(created)
                 afterCall += created
@@ -42,7 +40,6 @@ class InjectReference : ArgumentStorage() {
         }
         // Register listener
         for (x in afterCall) {
-            println("AfterCall: ${x.javaClass.name}")
             registerAllListeners(x, this, stage)
         }
     }
@@ -51,9 +48,13 @@ class InjectReference : ArgumentStorage() {
         storagesListener.computeIfAbsent(target.javaClass) {
             CachedInGameListeners(it)
         }.register(args, target) {
-            if (stage != null)
-                it.hasMetadata("[MGLib] Game") && it.get<String>("[MGLib] Game") == stage.instanceName
-            else return@register true
+            if (stage != null) {
+                // TODO change to GameParty object call
+                val result = it.hasMetadata("[MGLib] Game") && it.get<String>("[MGLib] Game") == stage.instanceName
+//                if (!result)
+//                    println("Argument not match; Not game player!")
+                return@register result
+            } else return@register true
         }
     }
 
@@ -78,7 +79,6 @@ class InjectReference : ArgumentStorage() {
             for ((x, y) in injectFields) {
                 val list = get(x)
                 if (list.isEmpty()) {
-                    println("Ignoring inject to ${x.name}")
                     continue
                 }
                 for (count in 0 until y.size.coerceAtLeast(list.size)) {
@@ -130,7 +130,6 @@ class InjectReference : ArgumentStorage() {
         fun register(ref: InjectReference, instance: Any, condition: (Entity) -> Boolean): List<EventInvoker> {
             val invokers = mutableListOf<EventInvoker>()
             register(ref, instance, condition, mutableListOf())
-            println("Registering instance ${instance.javaClass.name}")
             return invokers
         }
 

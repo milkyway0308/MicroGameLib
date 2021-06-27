@@ -13,14 +13,11 @@ object InjectorClassManagerStorage {
         val annotation = cls.getAnnotation(InjectTarget::class.java)
         if (annotation == null)
             throw IllegalStateException("Cannot register inject target ${cls.name} : Class not has \"InjectTarget\" annotation")
-        println("Adding inject ${cls.name} as ${annotation.scope}")
         of(annotation.scope).add(PriorityReference(cls, annotation.injectPriority))
     }
 
     fun of(scopeEnum: InjectScope): InjectorClassManager {
-        return scope.computeIfAbsent(scopeEnum) { InjectorClassManager() }.apply {
-            println("Scope $scopeEnum, Map ${map { x -> x.data.name }}")
-        }
+        return scope.computeIfAbsent(scopeEnum) { InjectorClassManager() }
     }
 
     fun finalizeGlobalInject() {
