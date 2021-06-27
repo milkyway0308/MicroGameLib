@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 internal const val TEST_GAME_NAME = "TestGame"
 
-@GameInstance(TEST_GAME_NAME)
+@GameInstance(TEST_GAME_NAME, alwaysStarted = true)
 class TestGameInstance(
     val configuration: TestConfiguration, val stage: GameInstanceObject,
 ) {

@@ -1,8 +1,10 @@
 package skywolf46.microgamelib.api.stages
 
-import skywolf46.microgamelib.annotations.Extract
+import org.bukkit.event.EventPriority
+import skywolf46.microgamelib.annotations.InGameListener
 import skywolf46.microgamelib.annotations.Inject
 import skywolf46.microgamelib.data.GameInstanceObject
+import skywolf46.microgamelib.events.GameJoinEvent
 import skywolf46.microgamelib.inject.impl.GameParty
 
 abstract class AbstractGameBase {
@@ -11,6 +13,11 @@ abstract class AbstractGameBase {
 
     @Inject
     lateinit var instance: GameInstanceObject
+
+    @InGameListener(priority = EventPriority.LOWEST)
+    fun GameJoinEvent.filterJoin() {
+        cancelFramework()
+    }
 
 
 }

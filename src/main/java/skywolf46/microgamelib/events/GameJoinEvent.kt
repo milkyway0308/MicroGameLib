@@ -8,12 +8,28 @@ import org.bukkit.event.player.PlayerEvent
 class GameJoinEvent(player: Player) : PlayerEvent(player), Cancellable {
 
     var cancel = false
+    var cancelledCause: CancelCause? = null
     override fun isCancelled(): Boolean {
-        return cancel
+        return isCancelledFromPlugin()
     }
 
     override fun setCancelled(p0: Boolean) {
+        if (cancel)
+            cancelledCause = CancelCause.CUSTOM
         cancel = p0
+    }
+
+    fun isCancelledFromPlugin(): Boolean {
+        return cancel && cancelledCause == CancelCause.FRAMEWORk
+    }
+
+    fun isCancelledFromFramework() : Boolean {
+        return cancel && cancelledCause == CancelCause.FRAMEWORk
+    }
+
+    internal fun cancelFramework() {
+        cancel = true
+        cancelledCause = CancelCause.FRAMEWORk
     }
 
     override fun getHandlers(): HandlerList {
@@ -27,5 +43,9 @@ class GameJoinEvent(player: Player) : PlayerEvent(player), Cancellable {
         fun getHandlerList(): HandlerList {
             return _handle
         }
+    }
+
+    enum class CancelCause {
+        CUSTOM, FRAMEWORk
     }
 }

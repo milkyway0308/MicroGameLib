@@ -86,11 +86,13 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
             reset()
             return
         }
-        if (stageArgument != null) {
-            projectArgument!!.removeProxy(stageArgument!!)
-            stageArgument!!.unregisterAllListener()
-        }
+        val cachedArgument = stageArgument
         stageArgument = InjectReference()
+        if (cachedArgument != null) {
+            projectArgument!!.removeProxy(cachedArgument)
+            cachedArgument.unregisterAllListener()
+            cachedArgument.extractTo(cachedArgument)
+        }
 
         InjectorClassManagerStorage.of(InjectScope.STAGE).applyReferences(projectArgument, stageArgument!!, this)
         currentStage = getGameStageObject().constructStage(stageArgument!!)

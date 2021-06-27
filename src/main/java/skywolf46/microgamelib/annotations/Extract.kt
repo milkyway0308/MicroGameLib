@@ -19,6 +19,6 @@ import skywolf46.microgamelib.enums.InjectScope
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FIELD)
-annotation class Extract(val scope: InjectScope = InjectScope.STAGE, val extractLast: Boolean) {
+annotation class Extract(val scope: InjectScope = InjectScope.STAGE, val extractLast: Boolean = true) {
 
 }

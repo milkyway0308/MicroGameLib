@@ -21,6 +21,8 @@ class InjectReference : ArgumentStorage() {
     }
 
     val injectedListeners = mutableListOf<EventInvoker>()
+    val transferTarget = mutableListOf<Any>()
+    val transferListener = mutableListOf<EventInvoker>()
 
     fun inject(topParent: ArgumentStorage?, stage: GameInstanceObject?, invoker: List<ConstructorInvoker>) {
         // Temporary add proxy to get all values from project
@@ -44,7 +46,11 @@ class InjectReference : ArgumentStorage() {
         }
     }
 
-    fun registerAllListeners(target: Any, args: InjectReference, stage: GameInstanceObject?): List<EventInvoker> {
+    fun registerAllListeners(
+        target: Any,
+        args: InjectReference,
+        stage: GameInstanceObject?,
+    ): List<EventInvoker> {
         return storagesListener.computeIfAbsent(target.javaClass) {
             CachedInGameListeners(it)
         }.register(args, target) {
@@ -53,6 +59,7 @@ class InjectReference : ArgumentStorage() {
             } else return@register true
         }
     }
+
 
     override fun newInstance(): ArgumentStorage {
         return InjectReference()
@@ -85,11 +92,17 @@ class InjectReference : ArgumentStorage() {
     }
 
     fun unregisterAllListener() {
-        injectedListeners.forEach {
-            it.unregister()
+        injectedListeners.forEach { x ->
+            x.unregister()
         }
     }
 
+    fun extractTo(target: InjectReference) {
+// TODO : add @Extract transfer
+//        for (x in transferTarget) {
+//            target.addArgument(x)
+//        }
+    }
 
     private class CachedInGameListeners(val cls: Class<*>) {
         // LifeCycle, Prepare
@@ -123,7 +136,11 @@ class InjectReference : ArgumentStorage() {
             return currentInvoker.computeIfAbsent(target) { mutableListOf() }
         }
 
-        fun register(ref: InjectReference, instance: Any, condition: (Entity) -> Boolean): List<EventInvoker> {
+        fun register(
+            ref: InjectReference,
+            instance: Any,
+            condition: (Entity) -> Boolean,
+        ): List<EventInvoker> {
             val invokers = mutableListOf<EventInvoker>()
             register(ref, instance, condition, mutableListOf())
             return invokers
@@ -221,8 +238,10 @@ class InjectReference : ArgumentStorage() {
         injectedListeners += listener
     }
 
+
     private class CachedInjectTargets(cls: Class<*>) {
         val injectFields = mutableMapOf<Class<*>, MutableList<Field>>()
+        val extractFields = mutableMapOf<InjectScope, MutableList<Pair<Class<*>, Extract>>>()
 
         init {
             cls.iterateParentClasses {

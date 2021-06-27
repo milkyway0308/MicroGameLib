@@ -4,6 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import skywolf46.extrautility.util.callEvent
+import skywolf46.extrautility.util.get
 import skywolf46.extrautility.util.removeValue
 import skywolf46.extrautility.util.set
 import skywolf46.microgamelib.annotations.InGameListener
@@ -32,16 +33,20 @@ open class GameParty(private val parent: GameParty?) {
     }
 
     open fun addPlayer(player: Player) {
-        GameJoinEvent(player).callEvent().apply {
-            if (isCancelled)
-                return
+        val before = player.get<String>("[MGLib] Game")
+        if (before != null) {
+            return
         }
         player["[MGLib] Game"] = gameInstance.instanceName
+        GameJoinEvent(player).callEvent().apply {
+            if (isCancelled) {
+                player.removeValue("[MGLib] Game")
+                return
+            }
+        }
         players.add(player)
         Bukkit.getPluginManager().callEvent(GameAfterJoinEvent(player))
-
     }
-
 
 
 }

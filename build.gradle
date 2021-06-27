@@ -5,7 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.32'
 }
 
-version properties["version"]
+version rootProject.properties["version"]
 
 repositories {
     mavenCentral()
@@ -37,7 +37,7 @@ publishing {
     publications {
         create("jar", MavenPublication) {
             groupId 'skywolf46'
-            artifactId "MicroGameLib"
+            artifactId "microgamelib"
             version rootProject.properties['version'] as String
             from components.java
         }
