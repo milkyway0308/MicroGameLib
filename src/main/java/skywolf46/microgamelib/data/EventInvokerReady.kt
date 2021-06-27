@@ -15,8 +15,12 @@ data class EventInvokerReady(
         target: Any,
         condition: (Entity) -> Boolean,
         preProcess: ArgumentStorage.() -> Unit,
+        additionalUnregister: EventInvoker.() -> Unit,
     ): EventInvoker {
-        val invoker = EventInvoker(condition, MethodInvoker(method, target), preProcess, unregisterer)
+        val invoker = EventInvoker(condition, MethodInvoker(method, target), preProcess) {
+            unregisterer(this)
+            additionalUnregister(this)
+        }
         registerer(invoker)
         return invoker
     }

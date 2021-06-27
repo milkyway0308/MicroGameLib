@@ -8,6 +8,7 @@ class GameInstanceData(val gameName: String) {
     val gameStageMap = mutableMapOf<String, GameStageData>()
     var gameConfiguration : ConfigurationStructure? = null
     var isMultiStaged = false
+    var alwaysStarted = false
 
 
     fun getStage(index: Int): GameStageData {

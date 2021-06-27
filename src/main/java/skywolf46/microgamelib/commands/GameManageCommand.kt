@@ -1,14 +1,18 @@
 package skywolf46.microgamelib.commands
 
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import skywolf46.commandannotation.kotlin.annotation.Force
 import skywolf46.commandannotation.kotlin.annotation.Mark
 import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.commandannotationmc.minecraft.annotations.MinecraftCommand
+import skywolf46.commandannotationmc.minecraft.annotations.preprocessor.PlayerOnly
+import skywolf46.extrautility.util.get
 import skywolf46.extrautility.util.sendMessage
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.data.GameInstanceData
 import skywolf46.microgamelib.data.GameInstanceObject
+import skywolf46.microgamelib.inject.impl.GameParty
 import skywolf46.microgamelib.storage.GameInstanceStorage
 
 object GameManageCommand {
@@ -50,6 +54,24 @@ object GameManageCommand {
         }
     }
 
+    @MinecraftCommand("/mglib game <string> join")
+    @PlayerOnly
+    fun Arguments.onJoin(player: Player) {
+        args<String>(false) { stageName ->
+            GameInstanceStorage.getGameInstance(stageName)?.let { stage ->
+                if (stage.gameData.alwaysStarted) {
+                    player.sendMessage("§cOperation not supported : Join feature only supports for always-enabled games")
+                    return
+                }
+                if (player.hasMetadata("[MGLib] Game")) {
+                    player.sendMessage("§cYou have to quit current game to join another game.")
+                    return
+                }
+                stage.stageArgument!![GameParty::class.java][0].addPlayer(player)
+            }
+        }
+    }
+
     @MinecraftCommand("/mglib game <string> delete")
     fun Arguments.onDelete(sender: CommandSender) {
 
@@ -59,8 +81,11 @@ object GameManageCommand {
     fun Arguments.onStart(sender: CommandSender) {
         args<String>(false) { stageName ->
             GameInstanceStorage.getGameInstance(stageName)?.apply {
+                if (!gameData.alwaysStarted) {
+                    sender.sendMessage("§cOperation not supported : Start feature not supports to always-enabled games")
+                    return
+                }
                 start()
-
             } ?: sender.sendMessage("§cCannot start game instance \"$stageName\" : Instance not registered")
         }
     }

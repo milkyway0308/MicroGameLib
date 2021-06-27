@@ -42,8 +42,6 @@ open class GameParty(private val parent: GameParty?) {
 
     }
 
-    @InGameListener
-    fun BlockBreakEvent.onListen() {
-        println("Hello world")
-    }
+
+
 }

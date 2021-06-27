@@ -105,6 +105,9 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
         projectArgument = null
         stageArgument = null
         println("Stop stage")
+        if (gameData.alwaysStarted) {
+            start()
+        }
     }
 
 }

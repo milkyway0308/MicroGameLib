@@ -44,16 +44,12 @@ class InjectReference : ArgumentStorage() {
         }
     }
 
-    fun registerAllListeners(target: Any, args: InjectReference, stage: GameInstanceObject?) {
-        storagesListener.computeIfAbsent(target.javaClass) {
+    fun registerAllListeners(target: Any, args: InjectReference, stage: GameInstanceObject?): List<EventInvoker> {
+        return storagesListener.computeIfAbsent(target.javaClass) {
             CachedInGameListeners(it)
         }.register(args, target) {
             if (stage != null) {
-                // TODO change to GameParty object call
-                val result = it.hasMetadata("[MGLib] Game") && it.get<String>("[MGLib] Game") == stage.instanceName
-//                if (!result)
-//                    println("Argument not match; Not game player!")
-                return@register result
+                return@register it.hasMetadata("[MGLib] Game") && it.get<String>("[MGLib] Game") == stage.instanceName
             } else return@register true
         }
     }
@@ -163,9 +159,11 @@ class InjectReference : ArgumentStorage() {
         ) {
             if (InjectScope.GLOBAL in currentInvoker) {
                 for (y in currentInvoker[InjectScope.GLOBAL]!!) {
-                    InjectorClassManagerStorage.globalVariable.registerListener(y.register(instance, condition) {
+                    InjectorClassManagerStorage.globalVariable.registerListener(y.register(instance, condition, {
                         addArgument(ref)
                         addArgument(instance)
+                    }) {
+                        InjectorClassManagerStorage.globalVariable.injectedListeners -= this
                     })
                 }
                 // Do not register twice
@@ -189,10 +187,13 @@ class InjectReference : ArgumentStorage() {
             watcher.watchInitialized(cls)
 
             if (InjectScope.GAME in currentInvoker) {
+                val proxy = (ref.getProxies()[0] as InjectReference)
                 for (y in currentInvoker[InjectScope.GAME]!!) {
-                    (ref.getProxies()[0] as InjectReference).registerListener(y.register(instance, condition) {
+                    proxy.registerListener(y.register(instance, condition, {
                         addArgument(ref)
                         addArgument(instance)
+                    }) {
+                        proxy.injectedListeners -= this
                     })
                 }
             }
@@ -205,9 +206,11 @@ class InjectReference : ArgumentStorage() {
         ) {
             if (InjectScope.STAGE in currentInvoker) {
                 for (y in currentInvoker[InjectScope.STAGE]!!) {
-                    ref.registerListener(y.register(instance, condition) {
+                    ref.registerListener(y.register(instance, condition, {
                         addArgument(ref)
                         addArgument(instance)
+                    }) {
+                        ref.injectedListeners -= this
                     })
                 }
             }

@@ -68,6 +68,7 @@ class MicroGameLib : JavaPlugin() {
         GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.value) { GameInstanceData(gameInstance.value) }
             .apply {
                 isMultiStaged = gameInstance.allowMultiInstance
+                alwaysStarted = gameInstance.alwaysStarted
                 val stage = GameStageData(this, gameInstance.value, cls)
                 gameStageMap[gameInstance.value] = stage
                 gameStages.add(stage)
@@ -172,6 +173,14 @@ class MicroGameLib : JavaPlugin() {
                 GameInstanceStorage.gameMap[x] = GameInstanceObject(x, y, y.gameConfiguration!!)
                 log("§e--- Registered minigame instance \"$x\".")
             }
+        }
+    }
+
+    private fun finalizeAlwaysEnabledGames() {
+        log("§e-- Enabling always-enabled game instances..")
+        for ((_, y) in GameInstanceStorage.gameMap) {
+            log("§e--- Starting game instance ${y.instanceName} (Game \"${y.gameData.gameName}\")")
+            y.start()
         }
     }
 

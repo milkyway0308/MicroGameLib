@@ -1,4 +1,4 @@
-package skywolf46.microgamelib.abstraction
+package skywolf46.microgamelib.api.stages
 
 import skywolf46.microgamelib.annotations.Extract
 import skywolf46.microgamelib.annotations.Inject
