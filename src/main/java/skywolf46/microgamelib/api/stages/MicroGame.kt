@@ -7,7 +7,7 @@ import skywolf46.microgamelib.data.GameInstanceObject
 import skywolf46.microgamelib.events.playerEvent.GameJoinEvent
 import skywolf46.microgamelib.inject.impl.GameParty
 
-abstract class AbstractGameBase {
+abstract class MicroGame {
     @Inject
     lateinit var party: GameParty
 

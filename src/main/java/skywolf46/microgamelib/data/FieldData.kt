@@ -23,6 +23,7 @@ data class FieldData(
                 Class.forName(x.typeName)
             }.toTypedArray()
         } catch (e: Exception) {
+            e.printStackTrace()
             throw IllegalStateException("Cannot process field ${field.name} : ${e.message}")
         }
     } else emptyArray()

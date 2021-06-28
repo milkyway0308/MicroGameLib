@@ -5,7 +5,7 @@ import skywolf46.microgamelib.annotations.InGameListener
 import skywolf46.microgamelib.events.playerEvent.GameAfterJoinEvent
 import skywolf46.microgamelib.events.playerEvent.GameJoinEvent
 
-abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractGameBase() {
+abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : MicroGame() {
 
     @InGameListener(priority = EventPriority.LOWEST)
     fun GameJoinEvent.onEvent() {
@@ -16,8 +16,7 @@ abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractGameBas
 
     @InGameListener
     fun GameAfterJoinEvent.onPrepare() {
-        println("Party event!")
-        if (party.size()>= requiredPlayers) {
+        if (party.size() >= requiredPlayers) {
             instance.nextStage()
         }
     }
