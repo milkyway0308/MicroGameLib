@@ -8,6 +8,7 @@ import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.commandannotationmc.minecraft.annotations.MinecraftCommand
 import skywolf46.commandannotationmc.minecraft.annotations.preprocessor.PlayerOnly
 import skywolf46.extrautility.util.get
+import skywolf46.extrautility.util.log
 import skywolf46.extrautility.util.sendMessage
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.data.GameInstanceData
@@ -86,6 +87,22 @@ object GameManageCommand {
                     return
                 }
                 start()
+            } ?: sender.sendMessage("§cCannot start game instance \"$stageName\" : Instance not registered")
+        }
+    }
+
+    @MinecraftCommand("/mglib game <string> restart")
+    fun Arguments.onRestart(sender: CommandSender) {
+        args<String>(false) { stageName ->
+            GameInstanceStorage.getGameInstance(stageName)?.apply {
+                if (this.stageArgument == null) {
+                    sender.sendMessage("§cOperation not supported : Game not started")
+                    return
+                }
+                log("§eMicroGameLib / Log §f| §7Game restarted from ${sender.name}")
+                reset()
+                if (!gameData.alwaysStarted)
+                    start()
             } ?: sender.sendMessage("§cCannot start game instance \"$stageName\" : Instance not registered")
         }
     }

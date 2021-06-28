@@ -8,10 +8,7 @@ import skywolf46.asyncdataloader.file.impl.loadBukkitYaml
 import skywolf46.extrautility.util.callEvent
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.enums.InjectScope
-import skywolf46.microgamelib.events.gameEvent.GameAfterEndedEvent
-import skywolf46.microgamelib.events.gameEvent.GameEndedEvent
-import skywolf46.microgamelib.events.gameEvent.GameRestartEvent
-import skywolf46.microgamelib.events.gameEvent.GameStartedEvent
+import skywolf46.microgamelib.events.gameEvent.*
 import skywolf46.microgamelib.storage.InjectReference
 import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 import java.io.File
@@ -87,6 +84,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
     }
 
     fun nextStage() {
+        StageChangedEvent(this).callEvent()
         if (++gameStagePointer >= gameData.gameStages.size) {
             reset()
             return
@@ -102,10 +100,11 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
         InjectorClassManagerStorage.of(InjectScope.STAGE).applyReferences(projectArgument, stageArgument!!, this)
         currentStage = getGameStageObject().constructStage(stageArgument!!)
         stageArgument!!.registerAllListeners(currentStage!!, stageArgument!!, this)
+        StageAfterChangedEvent(this).callEvent()
     }
 
 
-    private fun reset() {
+    fun reset() {
         GameEndedEvent(this).callEvent()
         gameStagePointer = 0
         stageArgument!!.unregisterAllListener()

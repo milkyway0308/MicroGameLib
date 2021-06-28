@@ -15,12 +15,12 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.32'
     spigotApi("1.12.2")
-    compileOnly "skywolf46:commandannotation-core:3.0.20"
-    compileOnly "skywolf46:commandannotation-minecraft:3.0.20"
-    compileOnly "skywolf46:asyncdataloader-core:3.0.0.38"
-    compileOnly "skywolf46:asyncdataloader-file:3.0.0.38"
-    compileOnly "skywolf46:placeholders:1.6.3"
-    compileOnly "skywolf46:exutil:1.46.2"
+    api "skywolf46:commandannotation-core:3.0.20"
+    api "skywolf46:commandannotation-minecraft:3.0.20"
+    api "skywolf46:asyncdataloader-core:3.0.0.38"
+    api "skywolf46:asyncdataloader-file:3.0.0.38"
+    api "skywolf46:placeholders:1.6.3"
+    api "skywolf46:exutil:1.46.2"
 }
 
 publishing {

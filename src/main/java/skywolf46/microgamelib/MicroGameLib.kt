@@ -1,8 +1,12 @@
 package skywolf46.microgamelib
 
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import skywolf46.commandannotation.kotlin.CommandAnnotationCore
+import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.extrautility.annotations.AllowScanning
 import skywolf46.extrautility.util.MinecraftLoader
 import skywolf46.extrautility.util.log
@@ -38,7 +42,9 @@ class MicroGameLib : JavaPlugin() {
         validateGames()
         checkSingleInstanceGames()
         finalizeAlwaysEnabledGames()
+        prepareCommandAnnotationApi()
     }
+
 
     private fun scanClasses(classes: List<Class<*>>): List<Class<*>> {
         val gameClasses = mutableListOf<Class<*>>()
@@ -185,4 +191,13 @@ class MicroGameLib : JavaPlugin() {
         }
     }
 
+    private fun prepareCommandAnnotationApi() {
+        Arguments.register(Location::class) {
+            if (size() == 0 && params<Player>() != null) {
+                return@register params<Player>()!!.location
+            }
+            val world = Bukkit.getWorld(args<String>())!!
+            return@register Location(world, args()!!, args()!!, args()!!)
+        }
+    }
 }
