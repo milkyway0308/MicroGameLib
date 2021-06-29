@@ -111,7 +111,7 @@ object ConfigurationCommand {
     }
 
     // Min - 2 arguments
-    @MinecraftCommand("$GLOBAL_GAME_PREFIX insert <string> <string> <string>")
+    @MinecraftCommand("$GLOBAL_GAME_PREFIX insert <string> <string>")
     fun Arguments.onInsertValue(sender: CommandSender) {
         args<String>(false) { stageName ->
             GameInstanceStorage.getGameInstance(stageName)?.let { stage ->
@@ -130,7 +130,7 @@ object ConfigurationCommand {
                         sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is not Map; use $GLOBAL_GAME_PREFIX set <FieldName> <Value(Any)> instead.")
                         return
                     }
-                   val mapKey = args<String>()!!
+                    val mapKey = args<String>()!!
                     args(configField.argumentTypes[1].kotlin, false) { argument ->
                         val next = stage.config.declaredVariables[fieldName] as MutableMap<String, Any>?
                             ?: mutableMapOf<String, Any>().apply {
@@ -152,6 +152,49 @@ object ConfigurationCommand {
         }
     }
 
+
+    @MinecraftCommand("$GLOBAL_GAME_PREFIX add <string> <string>")
+    fun Arguments.onAddValue(sender: CommandSender) {
+        println("X3")
+        args<String>(false) { stageName ->
+            GameInstanceStorage.getGameInstance(stageName)?.let { stage ->
+                args<String>(false) { fieldName ->
+                    if (fieldName !in stage.config.fields) {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is not exists")
+                        return
+                    }
+                    val configField = stage.config.fields[fieldName]!!
+
+                    if (Map::class.java.isAssignableFrom(configField.type)) {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is not Map; use $GLOBAL_GAME_PREFIX insert <FieldName> <Key> <Value(Any)> instead.")
+                        return
+                    }
+                    if (!List::class.java.isAssignableFrom(configField.type)) {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Configuration instance \"$fieldName\" is List; use $GLOBAL_GAME_PREFIX set <FieldName> <Value(Any)> instead.")
+                        return
+                    }
+                    println("X1")
+                    args(configField.argumentTypes[0].kotlin, false) { argument ->
+                        val next = stage.config.declaredVariables[fieldName] as MutableList<Any>?
+                            ?: mutableListOf<Any>().apply {
+                                stage.config.declaredVariables[fieldName] = this
+                            }
+                        next.add(argument)
+                        println("X2")
+                        stage.reserveSave()
+                        sender.sendMessage("§aConfiguration updated for field \"${fieldName}\" in game instance \"$stageName\"")
+                    } illegalNumber {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Number field wrong (${this.message})")
+                    } noArgs {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Type of configuration field $fieldName (${configField.argumentTypes[1]}) is not registered to CommandAnnotation processors.")
+                    } throws {
+                        sender.sendMessage("§cCannot modify game instance configuration for game instance \"$stageName\" : Error occurred (${this.javaClass.name} : ${this.message})")
+                    }
+                }
+            }
+                ?: sender.sendMessage("§cCannot modify game instance configuration : Game instance \"$stageName\" is not registered")
+        }
+    }
 
     @MinecraftCommand("/mglib config <string> remove")
     fun Arguments.onRemoveValue(sender: CommandSender) {

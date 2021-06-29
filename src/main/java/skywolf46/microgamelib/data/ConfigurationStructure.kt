@@ -78,7 +78,9 @@ class ConfigurationStructure {
             } else {
                 // Try to cast if type illegal
                 val type = fields[x]!!.type
-                if (!type.isAssignableFrom(data.javaClass)) {
+                if (!type.isAssignableFrom(data.javaClass.run {
+                        if (kotlin.javaPrimitiveType == null) this else kotlin.javaPrimitiveType!!
+                    })) {
                     try {
                         DataConverterStorage.of(
                             data.javaClass, fields[x]!!.type

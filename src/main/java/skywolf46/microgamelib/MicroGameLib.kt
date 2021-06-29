@@ -200,7 +200,7 @@ class MicroGameLib : JavaPlugin() {
 
     private fun prepareCommandAnnotationApi() {
         Arguments.register(Location::class) {
-            if (size() == 0 && params<Player>() != null) {
+            if (size() != 4 && params<Player>() != null) {
                 return@register params<Player>()!!.location
             }
             val world = Bukkit.getWorld(args<String>())!!
