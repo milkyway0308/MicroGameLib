@@ -21,9 +21,10 @@ class GameTeamManager {
         if (players.size < label.size) {
             throw IllegalStateException("Cannot divide team : The minimum number of teams is greater than the current player.")
         }
+        val iterator = label.iterator()
         players.chunked(players.size / label.size).apply {
             forEach { players ->
-                GameTeam(this@GameTeamManager).apply {
+                GameTeam(iterator.next(), this@GameTeamManager).apply {
                     teamList += this
                     for (pl in players) {
                         playerMap[pl] = this

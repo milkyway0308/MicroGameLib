@@ -2,12 +2,15 @@ package skywolf46.microgamelib.data
 
 import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
+import skywolf46.extrautility.util.MethodInvoker
+import skywolf46.extrautility.util.MethodWrapper
 import skywolf46.extrautility.util.getMap
 import skywolf46.extrautility.util.log
 import skywolf46.microgamelib.annotations.Replace
 import skywolf46.microgamelib.storage.DataConverterStorage
 import java.lang.Exception
 import java.lang.IllegalStateException
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -18,9 +21,11 @@ import kotlin.reflect.jvm.javaField
 import kotlin.reflect.jvm.kotlinProperty
 
 class ConfigurationStructure {
-    //                                       FieldName, Field type, Default declare
     val fields = mutableMapOf<String, FieldData>()
+    val fieldErrorListener = mutableMapOf<String, Method>()
     var declaredVariables = mutableMapOf<String, Any>()
+
+    @Suppress("JoinDeclarationAndAssignment")
     val targetClass: KClass<*>
 
     constructor(cls: KClass<*>) {
@@ -52,6 +57,12 @@ class ConfigurationStructure {
             }
         } else {
             log("§c---- Cannot process ${cls.qualifiedName} : @GameConfiguration target constructor must empty.")
+        }
+        for (x in cls.java.declaredMethods) {
+            if (x.name in fields) {
+                x.isAccessible = true
+                fieldErrorListener[x.name] = x
+            }
         }
     }
 
@@ -89,6 +100,10 @@ class ConfigurationStructure {
     }
 
     operator fun get(name: String) = declaredVariables[name]
+
+    fun callError() {
+
+    }
 
     fun getUndeclaredFields(): List<String> {
         val lst = mutableListOf<String>()
