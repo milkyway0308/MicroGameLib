@@ -6,6 +6,7 @@ import skywolf46.asyncdataloader.core.abstraction.loader.AbstractDataSnapshot
 import skywolf46.asyncdataloader.file.impl.BukkitYamlBasedSnapshot
 import skywolf46.asyncdataloader.file.impl.loadBukkitYaml
 import skywolf46.extrautility.util.callEvent
+import skywolf46.extrautility.util.schedule
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.enums.InjectScope
 import skywolf46.microgamelib.api.events.gameEvent.*
@@ -84,6 +85,10 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
     }
 
     fun nextStage() {
+        schedule { enqueueNextStage() }
+    }
+
+    private fun enqueueNextStage() {
         StageChangedEvent(this).callEvent()
         if (++gameStagePointer >= gameData.gameStages.size) {
             reset()

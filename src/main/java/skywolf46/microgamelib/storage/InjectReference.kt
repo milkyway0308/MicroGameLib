@@ -80,11 +80,14 @@ class InjectReference : ArgumentStorage() {
             CachedInjectTargets(it)
         }.apply {
             for ((x, y) in injectFields) {
+                println("Setting ${x.name}")
                 val list = get(x)
                 if (list.isEmpty()) {
+                    println("Empty list! ignoring.")
                     continue
                 }
                 for (count in y.indices) {
+                    println("Injecting ${x.name} to ${y[count].declaringClass.name}#${y[count].name}")
                     y[count].set(target, list[0])
                 }
             }

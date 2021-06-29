@@ -9,18 +9,16 @@ import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 
 @InjectTarget(InjectScope.GAME)
 class DynamicEventHandle {
-    @Inject
-    private lateinit var args: InjectReference
 
     @Inject
     private lateinit var gameInstance: GameInstanceObject
 
     fun bindListenerTo(scope: InjectScope, instance: Any): () -> Unit {
         val list = when (scope) {
-            InjectScope.STAGE -> args
-            InjectScope.GAME -> args.getProxies()[0] as InjectReference
+            InjectScope.STAGE -> gameInstance.stageArgument!!
+            InjectScope.GAME ->  gameInstance.stageArgument!!.getProxies()[0] as InjectReference
             InjectScope.GLOBAL -> InjectorClassManagerStorage.globalVariable
-        }.registerAllListeners(instance, args, gameInstance)
+        }.registerAllListeners(instance,  gameInstance.stageArgument!!, gameInstance)
         return {
             for (x in list)
                 x.unregister()

@@ -2,15 +2,17 @@ package skywolf46.microgamelib.api.data
 
 import org.bukkit.entity.Player
 import skywolf46.microgamelib.annotations.Inject
+import skywolf46.microgamelib.annotations.InjectTarget
+import skywolf46.microgamelib.enums.InjectScope
 import skywolf46.microgamelib.inject.impl.GameParty
 import java.lang.IllegalStateException
 
-class GameTeamManager {
+// TODO convert to internal inject
+class GameTeamManager(val party: GameParty) {
     private val playerMap = mutableMapOf<Player, GameTeam>()
     private val teamList = mutableListOf<GameTeam>()
+    private val labeledTeamMap = mutableMapOf<String, GameTeam>()
 
-    @Inject
-    private lateinit var party: GameParty
 
     val teams
         get() = teamList.toList()
@@ -30,6 +32,8 @@ class GameTeamManager {
                         playerMap[pl] = this
                         this.teamPlayers.add(pl)
                     }
+                }.apply {
+                    labeledTeamMap[teamName] = this
                 }
             }
         }
@@ -44,7 +48,12 @@ class GameTeamManager {
         return playerMap[player]
     }
 
+    fun teamOf(name: String): GameTeam? {
+        return labeledTeamMap[name]
+    }
+
     fun cleanUp() {
+        labeledTeamMap.clear()
         teamList.clear()
         playerMap.clear()
     }

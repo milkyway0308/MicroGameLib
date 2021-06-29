@@ -17,6 +17,9 @@ import skywolf46.microgamelib.api.events.playerEvent.GameQuitEvent
 
 @InjectTarget(scope = InjectScope.GAME)
 open class GameParty(private val parent: GameParty?) {
+    init {
+        println("Party created")
+    }
     @Inject
     private lateinit var gameInstance: GameInstanceObject
 
@@ -52,6 +55,7 @@ open class GameParty(private val parent: GameParty?) {
                 return
             }
         }
+        println("Added player")
         playerList.add(player)
         Bukkit.getPluginManager().callEvent(GameAfterJoinEvent(gameInstance, player))
     }

@@ -9,10 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import skywolf46.commandannotation.kotlin.CommandAnnotationCore
 import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.extrautility.annotations.AllowScanning
-import skywolf46.extrautility.util.MinecraftLoader
-import skywolf46.extrautility.util.get
-import skywolf46.extrautility.util.log
-import skywolf46.extrautility.util.removeValue
+import skywolf46.extrautility.util.*
 import skywolf46.microgamelib.annotations.GameConfiguration
 import skywolf46.microgamelib.annotations.GameInstance
 import skywolf46.microgamelib.annotations.GameStage
@@ -32,6 +29,10 @@ class MicroGameLib : JavaPlugin() {
     }
 
     override fun onEnable() {
+        schedule { enablePlugin() }
+    }
+
+    private fun enablePlugin() {
         inst = this
         log("§bMicroGameLib - Super lightweight minigame library")
         log("§e-- Starting up..")
