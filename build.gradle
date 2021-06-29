@@ -20,7 +20,7 @@ dependencies {
     api "skywolf46:asyncdataloader-core:3.0.0.38"
     api "skywolf46:asyncdataloader-file:3.0.0.38"
     api "skywolf46:placeholders:1.6.3"
-    api "skywolf46:exutil:1.46.2"
+    api "skywolf46:exutil:1.48.1"
 }
 
 publishing {

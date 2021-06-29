@@ -3,24 +3,25 @@ package skywolf46.microgamelib
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import skywolf46.commandannotation.kotlin.CommandAnnotationCore
 import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.extrautility.annotations.AllowScanning
 import skywolf46.extrautility.util.MinecraftLoader
+import skywolf46.extrautility.util.get
 import skywolf46.extrautility.util.log
+import skywolf46.extrautility.util.removeValue
 import skywolf46.microgamelib.annotations.GameConfiguration
 import skywolf46.microgamelib.annotations.GameInstance
 import skywolf46.microgamelib.annotations.GameStage
 import skywolf46.microgamelib.annotations.InjectTarget
-import skywolf46.microgamelib.data.ConfigurationStructure
-import skywolf46.microgamelib.data.GameInstanceData
-import skywolf46.microgamelib.data.GameInstanceObject
-import skywolf46.microgamelib.data.GameStageData
+import skywolf46.microgamelib.data.*
 import skywolf46.microgamelib.storage.GameInstanceStorage
 import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 import java.io.File
+import java.lang.IllegalStateException
 
 @AllowScanning
 class MicroGameLib : JavaPlugin() {
@@ -38,6 +39,7 @@ class MicroGameLib : JavaPlugin() {
         val gameClasses = scanClasses(MinecraftLoader.loadAllClass())
         finalizeInjection()
         prepareConfiguration(gameClasses)
+        registerSerializers()
         loadGameConfiguration()
         validateGames()
         checkSingleInstanceGames()
@@ -191,6 +193,11 @@ class MicroGameLib : JavaPlugin() {
         }
     }
 
+    private fun registerSerializers() {
+        log("§e-- Registering serializers")
+        ConfigurationSerialization.registerClass(SelectedLocation::class.java)
+    }
+
     private fun prepareCommandAnnotationApi() {
         Arguments.register(Location::class) {
             if (size() == 0 && params<Player>() != null) {
@@ -198,6 +205,17 @@ class MicroGameLib : JavaPlugin() {
             }
             val world = Bukkit.getWorld(args<String>())!!
             return@register Location(world, args()!!, args()!!, args()!!)
+        }
+
+        Arguments.register(SelectedLocation::class) {
+            if (params<Player>() == null) {
+                throw IllegalStateException()
+            }
+            val player = params<Player>()!!
+            return@register player.get<Array<Location>>("[MGLib] Locs")!!.run {
+                player.removeValue("[MGLib] Locs")
+                return@run SelectedLocation(this[0], this[1])
+            }
         }
     }
 }
