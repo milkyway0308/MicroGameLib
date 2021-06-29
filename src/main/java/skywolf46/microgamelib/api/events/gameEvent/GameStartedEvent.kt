@@ -1,12 +1,10 @@
-package skywolf46.microgamelib.events.playerEvent
+package skywolf46.microgamelib.api.events.gameEvent
 
-import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
-import org.bukkit.event.player.PlayerEvent
+import org.bukkit.event.server.ServerEvent
+import skywolf46.microgamelib.data.GameInstanceObject
 
-class GameAfterJoinEvent(player: Player) : PlayerEvent(player) {
-
-
+class GameStartedEvent(val game: GameInstanceObject) : ServerEvent() {
     override fun getHandlers(): HandlerList {
         return _handle
     }

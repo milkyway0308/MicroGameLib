@@ -2,9 +2,9 @@ package skywolf46.microgamelib.api.stages
 
 import org.bukkit.event.EventPriority
 import skywolf46.microgamelib.annotations.InGameListener
-import skywolf46.microgamelib.events.gameEvent.StageAfterChangedEvent
-import skywolf46.microgamelib.events.playerEvent.GameAfterJoinEvent
-import skywolf46.microgamelib.events.playerEvent.GameJoinEvent
+import skywolf46.microgamelib.api.events.gameEvent.StageAfterChangedEvent
+import skywolf46.microgamelib.api.events.playerEvent.GameAfterJoinEvent
+import skywolf46.microgamelib.api.events.playerEvent.GameJoinEvent
 
 abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : MicroGame() {
 

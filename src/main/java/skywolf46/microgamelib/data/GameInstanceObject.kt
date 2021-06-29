@@ -8,7 +8,7 @@ import skywolf46.asyncdataloader.file.impl.loadBukkitYaml
 import skywolf46.extrautility.util.callEvent
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.enums.InjectScope
-import skywolf46.microgamelib.events.gameEvent.*
+import skywolf46.microgamelib.api.events.gameEvent.*
 import skywolf46.microgamelib.storage.InjectReference
 import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 import java.io.File

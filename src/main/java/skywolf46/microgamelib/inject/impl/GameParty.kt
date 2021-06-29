@@ -10,10 +10,10 @@ import skywolf46.microgamelib.annotations.Inject
 import skywolf46.microgamelib.annotations.InjectTarget
 import skywolf46.microgamelib.data.GameInstanceObject
 import skywolf46.microgamelib.enums.InjectScope
-import skywolf46.microgamelib.events.playerEvent.GameAfterJoinEvent
-import skywolf46.microgamelib.events.playerEvent.GameAfterQuitEvent
-import skywolf46.microgamelib.events.playerEvent.GameJoinEvent
-import skywolf46.microgamelib.events.playerEvent.GameQuitEvent
+import skywolf46.microgamelib.api.events.playerEvent.GameAfterJoinEvent
+import skywolf46.microgamelib.api.events.playerEvent.GameAfterQuitEvent
+import skywolf46.microgamelib.api.events.playerEvent.GameJoinEvent
+import skywolf46.microgamelib.api.events.playerEvent.GameQuitEvent
 
 @InjectTarget(scope = InjectScope.GAME)
 open class GameParty(private val parent: GameParty?) {
@@ -30,10 +30,10 @@ open class GameParty(private val parent: GameParty?) {
     open fun removePlayer(player: Player) {
         parent?.removePlayer(player) ?: kotlin.run {
             if (playerList.contains(player)) {
-                Bukkit.getPluginManager().callEvent(GameQuitEvent(player))
+                Bukkit.getPluginManager().callEvent(GameQuitEvent(gameInstance, player))
                 playerList.remove(player)
                 player.removeValue("[MGLib] Game")
-                Bukkit.getPluginManager().callEvent(GameAfterQuitEvent(player))
+                Bukkit.getPluginManager().callEvent(GameAfterQuitEvent(gameInstance, player))
             }
         }
     }
@@ -45,7 +45,7 @@ open class GameParty(private val parent: GameParty?) {
         }
         player["[MGLib] Game"] = gameInstance.instanceName
         println("Called event")
-        GameJoinEvent(player).callEvent().apply {
+        GameJoinEvent(gameInstance, player).callEvent().apply {
             if (isCancelled) {
                 println("Cancelled! Prevent event.")
                 player.removeValue("[MGLib] Game")
@@ -53,7 +53,7 @@ open class GameParty(private val parent: GameParty?) {
             }
         }
         playerList.add(player)
-        Bukkit.getPluginManager().callEvent(GameAfterJoinEvent(player))
+        Bukkit.getPluginManager().callEvent(GameAfterJoinEvent(gameInstance, player))
     }
 
 

@@ -5,7 +5,7 @@ import skywolf46.microgamelib.annotations.InGameListener
 import skywolf46.microgamelib.annotations.Inject
 import skywolf46.microgamelib.annotations.InjectTarget
 import skywolf46.microgamelib.enums.InjectScope
-import skywolf46.microgamelib.events.gameEvent.GameEndedEvent
+import skywolf46.microgamelib.api.events.gameEvent.GameEndedEvent
 import skywolf46.microgamelib.inject.impl.GameParty
 
 @InjectTarget(InjectScope.GAME)

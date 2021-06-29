@@ -1,10 +1,10 @@
-package skywolf46.microgamelib.events.gameEvent
+package skywolf46.microgamelib.api.events.gameEvent
 
 import org.bukkit.event.HandlerList
 import org.bukkit.event.server.ServerEvent
 import skywolf46.microgamelib.data.GameInstanceObject
 
-class StageAfterChangedEvent(val game: GameInstanceObject) : ServerEvent() {
+class GameAfterEndedEvent(val game: GameInstanceObject) : ServerEvent() {
     override fun getHandlers(): HandlerList {
         return _handle
     }
@@ -17,6 +17,4 @@ class StageAfterChangedEvent(val game: GameInstanceObject) : ServerEvent() {
             return _handle
         }
     }
-
-
 }
