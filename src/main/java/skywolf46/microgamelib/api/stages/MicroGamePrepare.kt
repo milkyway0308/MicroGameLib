@@ -27,6 +27,7 @@ abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : MicroGame() {
     }
 
     private fun checkPlayers() {
+        println("Req: $requiredPlayers")
         if (party.size() >= requiredPlayers) {
             instance.nextStage()
         }

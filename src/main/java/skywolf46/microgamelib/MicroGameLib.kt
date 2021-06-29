@@ -81,7 +81,7 @@ class MicroGameLib : JavaPlugin() {
                 alwaysStarted = gameInstance.alwaysStarted
                 val stage = GameStageData(this, gameInstance.value, cls)
                 gameStageMap[gameInstance.value] = stage
-                gameStages.add(stage)
+                gameStages.add(PriorityReference(stage, -1))
             }
         log("§e--- Game instance §f\"${gameInstance.value}\" §e(${cls.name}, ${if (gameInstance.allowMultiInstance) "Multi-Staged" else "Single"}) registered")
     }
@@ -101,7 +101,7 @@ class MicroGameLib : JavaPlugin() {
                 }
                 val stage = GameStageData(this, gameInstance.value, cls)
                 gameStageMap[gameInstance.value] = stage
-                gameStages.add(stage)
+                gameStages.add(PriorityReference(stage, priority = gameInstance.stagePriority))
             }
         log("§e--- Game stage §f\"${gameInstance.value}\" §e(Priority ${gameInstance.stagePriority}) for ${gameInstance.gameName} registered")
     }
