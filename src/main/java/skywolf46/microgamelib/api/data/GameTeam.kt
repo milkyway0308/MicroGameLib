@@ -4,4 +4,8 @@ import org.bukkit.entity.Player
 
 class GameTeam(val teamName: String, private val manager: GameTeamManager) {
     internal val teamPlayers = mutableListOf<Player>()
+
+    val players
+        get() = ArrayList(teamPlayers)
+
 }

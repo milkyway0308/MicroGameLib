@@ -44,4 +44,9 @@ class GameTeamManager {
         return playerMap[player]
     }
 
+    fun cleanUp() {
+        teamList.clear()
+        playerMap.clear()
+    }
+
 }
