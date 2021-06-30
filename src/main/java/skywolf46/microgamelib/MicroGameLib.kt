@@ -146,7 +146,7 @@ class MicroGameLib : JavaPlugin() {
 
     private fun loadGameFromFile(file: File) {
         val loaded = YamlConfiguration.loadConfiguration(file)
-        val gameInstance = GameInstanceStorage.getGameInstanceData(loaded.getString("Game"))
+        val gameInstance = GameInstanceStorage.getGameInstanceData(loaded.getString("Game")!!)
         gameInstance?.apply {
             if (this.gameConfiguration == null) {
                 log("§c-- Cannot load minigame configuration \"${file.name}\" : Configuration class not exists for game ${
@@ -160,8 +160,8 @@ class MicroGameLib : JavaPlugin() {
                 return@apply
             }
             log("§e--- Loading minigame stage \"${loaded.getString("Stage")}\" (Game instance: ${loaded.getString("Game")})")
-            GameInstanceStorage.gameMap[loaded.getString("Stage")] =
-                GameInstanceObject(loaded.getString("Stage"), this, gameConfiguration!!.loadFromSection(sector))
+            GameInstanceStorage.gameMap[loaded.getString("Stage")!!] =
+                GameInstanceObject(loaded.getString("Stage")!!, this, gameConfiguration!!.loadFromSection(sector))
         }
             ?: log("§c-- Cannot load minigame configuration \"${file.name}\" : Minigame ${loaded.getString("Game")} is not registered")
     }
@@ -204,7 +204,7 @@ class MicroGameLib : JavaPlugin() {
             if (size() != 4 && params<Player>() != null) {
                 return@register params<Player>()!!.location
             }
-            val world = Bukkit.getWorld(args<String>())!!
+            val world = Bukkit.getWorld(args<String>()!!)!!
             return@register Location(world, args()!!, args()!!, args()!!)
         }
 

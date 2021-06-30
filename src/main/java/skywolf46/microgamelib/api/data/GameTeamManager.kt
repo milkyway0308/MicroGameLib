@@ -17,9 +17,20 @@ class GameTeamManager(val party: GameParty) {
     val teams
         get() = teamList.toList()
 
+    fun addTeam(team: GameTeam): GameTeam {
+        teamList += team
+        labeledTeamMap[team.teamName] = team
+        return team
+    }
+
+    fun getOrAddTeam(name: String, team: () -> GameTeam): GameTeam {
+        return labeledTeamMap[name] ?: addTeam(team())
+    }
+
     fun divide(label: List<String>) {
         // Cache for performance
         val players = party.getPlayers()
+        println("Players: ${players}")
         if (players.size < label.size) {
             throw IllegalStateException("Cannot divide team : The minimum number of teams is greater than the current player.")
         }

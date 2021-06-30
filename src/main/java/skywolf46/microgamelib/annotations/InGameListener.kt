@@ -9,4 +9,5 @@ import org.bukkit.event.EventPriority
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
-annotation class InGameListener(val priority: EventPriority = EventPriority.NORMAL)
+// TODO Use includeEntity parameter to process non-polayer entity
+annotation class InGameListener(val priority: EventPriority = EventPriority.NORMAL, val includeEntity: Boolean = false)

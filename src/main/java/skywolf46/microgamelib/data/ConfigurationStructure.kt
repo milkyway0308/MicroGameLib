@@ -71,7 +71,7 @@ class ConfigurationStructure {
             // Skip if not member
             if (x !in fields)
                 continue
-            val data = config.get(x)
+            val data = config.get(x)!!
             if (data is ConfigurationSection) {
                 // Construct to map
                 declaredVariables[x] = config.getMap(x)

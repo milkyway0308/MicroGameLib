@@ -1,0 +1,11 @@
+name: MicroGameLib
+version: 1.0.16
+main: skywolf46.microgamelib.MicroGameLib
+api-version: 1.13
+description: Plugin file generated with Wolfradle
+depend:
+  - CommandAnnotation
+  - AsyncDataLoader-Core
+  - AsyncDataLoader-FileSystem
+  - PlaceHolders
+  - SkywolfExtraUtility

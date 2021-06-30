@@ -23,7 +23,7 @@ class GameJoinEvent(instance: GameInstanceObject, player: Player) : AbstractPlay
     }
 
     fun isCancelledFromPlugin(): Boolean {
-        return cancel && cancelledCause == CancelCause.FRAMEWORk
+        return cancel && cancelledCause == CancelCause.CUSTOM
     }
 
     fun isCancelledFromFramework(): Boolean {

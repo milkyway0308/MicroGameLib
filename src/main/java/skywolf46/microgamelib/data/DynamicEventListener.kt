@@ -2,11 +2,13 @@ package skywolf46.microgamelib.data
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.extrautility.data.ArgumentStorage
+import skywolf46.extrautility.util.ClassUtil.iterateParentClasses
 import skywolf46.microgamelib.MicroGameLib
 import java.lang.IllegalStateException
 import java.lang.reflect.Field
@@ -24,11 +26,12 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
     val listeners = mutableListOf<EventInvoker>()
 
     init {
-        for (x in event.declaredFields) {
-            if (Entity::class.java.isAssignableFrom(x.type)) {
-                x.isAccessible = true
-                targetEntityFields += x
-
+        event.iterateParentClasses {
+            for (x in declaredFields) {
+                if (Entity::class.java.isAssignableFrom(x.type)) {
+                    x.isAccessible = true
+                    targetEntityFields += x
+                }
             }
         }
 //        if (targetEntityFields.isEmpty())
@@ -63,7 +66,7 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
             val entityList = eventArgument[Entity::class.java]
             listeners.filter {
                 for (x in entityList)
-                    if (it.condition.invoke(x))
+                    if (x !is Player || it.condition.invoke(x))
                         return@filter true
                 return@filter false
             }.forEach {

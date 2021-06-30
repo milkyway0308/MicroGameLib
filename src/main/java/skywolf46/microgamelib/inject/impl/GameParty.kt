@@ -47,7 +47,6 @@ open class GameParty(private val parent: GameParty?) {
             return
         }
         player["[MGLib] Game"] = gameInstance.instanceName
-        println("Called event")
         GameJoinEvent(gameInstance, player).callEvent().apply {
             if (isCancelled) {
                 println("Cancelled! Prevent event.")
@@ -55,7 +54,6 @@ open class GameParty(private val parent: GameParty?) {
                 return
             }
         }
-        println("Added player")
         playerList.add(player)
         Bukkit.getPluginManager().callEvent(GameAfterJoinEvent(gameInstance, player))
     }
