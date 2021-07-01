@@ -8,6 +8,7 @@ import java.lang.reflect.Method
 
 data class EventInvokerReady(
     val method: Method,
+    val includeEntity: Boolean,
     private val registerer: EventInvoker.() -> Unit,
     private val unregisterer: EventInvoker.() -> Unit,
 ) {
@@ -17,7 +18,7 @@ data class EventInvokerReady(
         preProcess: ArgumentStorage.() -> Unit,
         additionalUnregister: EventInvoker.() -> Unit,
     ): EventInvoker {
-        val invoker = EventInvoker(condition, MethodInvoker(method, target), preProcess) {
+        val invoker = EventInvoker(condition, MethodInvoker(method, target), includeEntity, preProcess) {
             unregisterer(this)
             additionalUnregister(this)
         }

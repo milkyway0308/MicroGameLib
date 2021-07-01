@@ -34,14 +34,12 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
                 }
             }
         }
-//        if (targetEntityFields.isEmpty())
-//            throw IllegalStateException("Cannot listen event ${event.name} : Event not contains \"org.bukkit.Entity\" implementing field")
         Bukkit.getPluginManager().registerEvent(event, EmptyListener, priority,
             { _, ev -> onEvent(ev) }, MicroGameLib.inst)
     }
 
-    fun create(mtd: Method): EventInvokerReady {
-        return EventInvokerReady(mtd, {
+    fun create(mtd: Method, includeEntity: Boolean): EventInvokerReady {
+        return EventInvokerReady(mtd, includeEntity, {
             listeners += this
         }) {
             listeners -= this
@@ -66,7 +64,7 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
             val entityList = eventArgument[Entity::class.java]
             listeners.filter {
                 for (x in entityList)
-                    if (x !is Player || it.condition.invoke(x))
+                    if ((x !is Player && it.includeEntity) || it.condition.invoke(x))
                         return@filter true
                 return@filter false
             }.forEach {

@@ -8,6 +8,7 @@ import skywolf46.extrautility.util.MethodInvoker
 data class EventInvoker(
     val condition: (Entity) -> Boolean,
     val method: MethodInvoker,
+    val includeEntity: Boolean,
     val preProcess: ArgumentStorage.() -> Unit,
     private val unregisterer: EventInvoker.() -> Unit,
 ) {

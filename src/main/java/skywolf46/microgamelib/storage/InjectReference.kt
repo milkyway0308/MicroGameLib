@@ -126,7 +126,7 @@ class InjectReference : ArgumentStorage() {
                             getScopedList(InjectScope.STAGE)
                                 .add(DynamicEventListener.eventOf(x.parameters[0].type as Class<Event>,
                                     priority)
-                                    .create(x)
+                                    .create(x, this.includeEntity)
                                 )
                         } catch (e: Exception) {
                             e.printStackTrace()
