@@ -6,6 +6,7 @@ import skywolf46.microgamelib.annotations.Inject
 import skywolf46.microgamelib.annotations.InjectTarget
 import skywolf46.microgamelib.enums.InjectScope
 import skywolf46.microgamelib.api.events.gameEvent.GameEndedEvent
+import skywolf46.microgamelib.enums.QuitCause
 import skywolf46.microgamelib.inject.impl.GameParty
 
 @InjectTarget(InjectScope.GAME)
@@ -21,6 +22,6 @@ class GameSystem {
         if (!doCleanUp)
             return
         for (player in party.getPlayers())
-            party.removePlayer(player)
+            party.removePlayer(player, QuitCause.GAME_ENDED)
     }
 }

@@ -1,13 +1,24 @@
 package skywolf46.microgamelib.api.events.playerEvent
 
 import org.bukkit.entity.Player
+import org.bukkit.event.Cancellable
 import org.bukkit.event.HandlerList
-import org.bukkit.event.player.PlayerEvent
 import skywolf46.microgamelib.api.abstraction.event.AbstractPlayerGameEvent
 import skywolf46.microgamelib.data.GameInstanceObject
-import skywolf46.microgamelib.enums.QuitCause
 
-class GameAfterQuitEvent(val cause: QuitCause, instance: GameInstanceObject, player: Player) : AbstractPlayerGameEvent(instance, player) {
+class PlayerSpectateEvent(game: GameInstanceObject, player: Player, val isSpectating: Boolean) :
+    AbstractPlayerGameEvent(game, player), Cancellable{
+
+    private var cancel = false
+
+    override fun isCancelled(): Boolean {
+        return cancel
+    }
+
+    override fun setCancelled(p0: Boolean) {
+        this.cancel = p0
+    }
+
     override fun getHandlers(): HandlerList {
         return _handle
     }

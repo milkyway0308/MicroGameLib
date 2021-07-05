@@ -20,14 +20,14 @@ dependencies {
     api "skywolf46:asyncdataloader-core:3.0.0.38"
     api "skywolf46:asyncdataloader-file:3.0.0.38"
     api "skywolf46:placeholders:1.6.3"
-    api "skywolf46:exutil:1.48.1"
+    api "skywolf46:exutil:1.50.0"
 
     wolfy "skywolf46:commandannotation-core:3.0.20"
     wolfy "skywolf46:commandannotation-minecraft:3.0.20"
     wolfy "skywolf46:asyncdataloader-core:3.0.0.38"
     wolfy "skywolf46:asyncdataloader-file:3.0.0.38"
     wolfy "skywolf46:placeholders:1.6.3"
-    wolfy "skywolf46:exutil:1.48.1"
+    wolfy "skywolf46:exutil:1.50.0"
 }
 
 publishing {

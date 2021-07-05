@@ -7,8 +7,6 @@ import skywolf46.microgamelib.api.events.playerEvent.GameAfterJoinEvent
 import skywolf46.microgamelib.api.events.playerEvent.GameJoinEvent
 
 abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : MicroGame() {
-
-
     @InGameListener(priority = EventPriority.LOWEST)
     fun GameJoinEvent.onEvent() {
         if (isCancelledFromFramework()) {
