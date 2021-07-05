@@ -17,7 +17,7 @@ import skywolf46.microgamelib.api.events.playerEvent.GameAfterQuitEvent
 import skywolf46.microgamelib.api.events.playerEvent.PlayerAfterSpectateEvent
 import java.lang.IllegalStateException
 
-class MicroSurvivalGame : MicroGame() {
+abstract class MicroSurvivalGame : MicroGame() {
 
     @InGameListener
     fun PlayerPreDeathEvent.onGame() {

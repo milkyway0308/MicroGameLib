@@ -18,20 +18,34 @@ class ConditionScheduler {
         if (delay <= 0)
             syncDelay(unit)
         else {
-            BukkitRunnableImpl {
+            BukkitRunnableImpl({
                 scopeOf(scope) -= this
-            }.apply {
+            }, unit).apply {
                 scopeOf(scope) += this
                 runTaskLater(MicroGameLib.inst, delay)
             }
         }
     }
 
+
     fun scopeOf(scope: InjectScope) = scopeMap.computeIfAbsent(scope) { mutableListOf() }
 
-    class BukkitRunnableImpl(val unit: BukkitRunnableImpl.() -> Unit) : BukkitRunnable() {
+    internal fun endScope(scope: InjectScope) {
+        scopeMap.remove(scope)?.toList()?.forEach {
+            it.cancel()
+        }
+    }
+
+    inner class BukkitRunnableImpl(val unregisterer: BukkitRunnableImpl.() -> Unit, val unit: () -> Unit) :
+        BukkitRunnable() {
         override fun run() {
-            unit(this)
+            unit()
+            unregisterer(this)
+        }
+
+        override fun cancel() {
+            super.cancel()
+            unregisterer(this)
         }
     }
 
