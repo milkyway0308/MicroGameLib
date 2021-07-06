@@ -7,10 +7,12 @@ import skywolf46.commandannotation.kotlin.annotation.Mark
 import skywolf46.commandannotation.kotlin.data.Arguments
 import skywolf46.commandannotationmc.minecraft.annotations.MinecraftCommand
 import skywolf46.commandannotationmc.minecraft.annotations.preprocessor.PlayerOnly
+import skywolf46.extrautility.util.callEvent
 import skywolf46.extrautility.util.get
 import skywolf46.extrautility.util.log
 import skywolf46.extrautility.util.sendMessage
 import skywolf46.microgamelib.MicroGameLib
+import skywolf46.microgamelib.api.events.gameEvent.GameSuggestNextStageEvent
 import skywolf46.microgamelib.data.GameInstanceData
 import skywolf46.microgamelib.data.GameInstanceObject
 import skywolf46.microgamelib.inject.impl.GameParty
@@ -83,7 +85,13 @@ object GameManageCommand {
         args<String>(false) { stageName ->
             GameInstanceStorage.getGameInstance(stageName)?.apply {
                 if (gameData.alwaysStarted) {
-                    sender.sendMessage("§cOperation not supported : Start feature not supports to always-enabled games")
+                    GameSuggestNextStageEvent(this).callEvent().apply {
+                        if (!isAccepted()) {
+                            sender.sendMessage("§cFailed to suggest starting game to stage : No listener bounded on current stage")
+                            return
+                        }
+                        sender.sendMessage("§astage skipped.")
+                    }
                     return
                 }
                 start()
