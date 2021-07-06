@@ -11,6 +11,7 @@ import skywolf46.extrautility.util.getOrSetValue
 import skywolf46.microgamelib.annotations.InGameListener
 import skywolf46.microgamelib.annotations.InjectTarget
 import skywolf46.microgamelib.enums.InjectScope
+import skywolf46.microgamelib.util.MaterialFinder
 
 @InjectTarget(InjectScope.GLOBAL)
 class PlayerLocationHandle {
@@ -18,7 +19,7 @@ class PlayerLocationHandle {
     fun PlayerLeftClickAtBlockEvent.onListen() {
         if (player.isOp || player.hasPermission("mglib.admin")) {
             player.itemInHand?.apply {
-                if (type == Material.GOLDEN_AXE) {
+                if (type == MaterialFinder.findMaterials("GOLD_AXE", "GOLDEN_AXE")) {
                     isCancelled = true
                     player.sendMessage("§6MicroGameLib §7| §e지점 1 설정됨!")
                     player.getOrSetValue("[MGLib] Locs") {
@@ -35,7 +36,7 @@ class PlayerLocationHandle {
             return
         if (player.isOp || player.hasPermission("mglib.admin")) {
             player.itemInHand?.apply {
-                if (type == Material.GOLDEN_AXE) {
+                if (type == MaterialFinder.findMaterials("GOLD_AXE", "GOLDEN_AXE")) {
                     isCancelled = true
                     player.sendMessage("§6MicroGameLib §7| §e지점 2 설정됨!")
                     player.getOrSetValue("[MGLib] Locs") {
