@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'skywolf46.wolfradle' version "1.1.5"
-    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.20'
 }
 
 version rootProject.properties["version"]
@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.4.32'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.5.20'
     spigotApi("1.16.5")
     api "skywolf46:commandannotation-core:3.0.20"
     api "skywolf46:commandannotation-minecraft:3.0.20"

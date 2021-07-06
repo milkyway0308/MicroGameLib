@@ -93,8 +93,9 @@ class MicroGameLib : JavaPlugin() {
             return
         }
 
-        GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.gameName) { GameInstanceData(gameInstance.value) }
+        GameInstanceStorage.gameMapData.computeIfAbsent(gameInstance.gameName) { GameInstanceData(gameInstance.gameName) }
             .apply {
+
                 if (gameStageMap.containsKey(gameInstance.value)) {
                     log("§c--- Cannot register Game stage §f\"${gameInstance.value}\" (${cls.name}) : Game stage name duplicated")
                     return
