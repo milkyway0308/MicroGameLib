@@ -8,7 +8,7 @@ class GameInstanceData(val gameName: String) {
     val gameStages = object : ArrayList<PriorityReference<GameStageData>>() {
         override fun add(element: PriorityReference<GameStageData>): Boolean {
             val ret = super.add(element)
-            sortWith(Comparator.reverseOrder())
+            sortWith(Comparator.naturalOrder())
             return ret
         }
     }
