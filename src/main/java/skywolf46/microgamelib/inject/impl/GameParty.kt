@@ -76,7 +76,7 @@ open class GameParty(private val parent: GameParty?) : ISpectate {
     }
 
     override fun getPlayers(includeSpectator: Boolean): List<Player> {
-        return if (!includeSpectator) getAllPlayers() else kotlin.run {
+        return if (includeSpectator) getAllPlayers() else kotlin.run {
             val players = mutableListOf<Player>()
             for (x in playerList)
                 if (!isSpectated(x))
@@ -91,11 +91,11 @@ open class GameParty(private val parent: GameParty?) : ISpectate {
         PlayerSpectateEvent(gameInstance, player, isSpectate).callEvent().apply {
             if (isCancelled)
                 return
-            PlayerAfterSpectateEvent(gameInstance, player, isSpectating).callEvent()
             if (isSpectating)
                 realSpectator += player
             else
                 realSpectator -= player
+            PlayerAfterSpectateEvent(gameInstance, player, isSpectating).callEvent()
         }
     }
 }

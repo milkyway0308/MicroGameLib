@@ -119,8 +119,8 @@ class ConfigurationStructure {
 
     fun constructToInstance(): Any {
         val instance = targetClass.primaryConstructor!!.call()
-        if (getUndeclaredFields().isNotEmpty())
-            throw IllegalStateException("Cannot create configuration instance : Variable not configured")
+//        if (getUndeclaredFields().isNotEmpty())
+//            throw IllegalStateException("Cannot create configuration instance : Variable not configured")
         for ((_, y) in fields) {
             y.field.set(instance, declaredVariables[y.fieldName])
         }

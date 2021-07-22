@@ -48,7 +48,8 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
 
     fun onEvent(ev: Any) {
         if (!event.isAssignableFrom(ev.javaClass)) {
-            throw IllegalStateException("Cannot call event ${event.name} : Object ${ev.javaClass.name} provided, Cannot cast object")
+//            throw IllegalStateException("Cannot call event ${event.name} : Object ${ev.javaClass.name} provided, Cannot cast object")
+            return
         }
         val eventArgument = ArgumentStorage()
         eventArgument.addArgument(ev)
@@ -64,7 +65,7 @@ class DynamicEventListener(val event: Class<Event>, val priority: EventPriority)
             val entityList = eventArgument[Entity::class.java]
             listeners.filter {
                 for (x in entityList)
-                    if ((x !is Player && it.includeEntity) || it.condition.invoke(x))
+                    if (it.includeEntity || it.condition.invoke(x))
                         return@filter true
                 return@filter false
             }.forEach {
