@@ -10,6 +10,7 @@ import skywolf46.extrautility.util.schedule
 import skywolf46.microgamelib.MicroGameLib
 import skywolf46.microgamelib.enums.InjectScope
 import skywolf46.microgamelib.api.events.gameEvent.*
+import skywolf46.microgamelib.inject.util.ConditionScheduler
 import skywolf46.microgamelib.storage.InjectReference
 import skywolf46.microgamelib.storage.InjectorClassManagerStorage
 import java.io.File
@@ -25,6 +26,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
     var projectArgument: InjectReference? = null
     var stageArgument: InjectReference? = null
     var currentStage: Any? = null
+    var conditionScheduler: ConditionScheduler = ConditionScheduler()
 
     constructor(stageName: String, gameData: GameInstanceData) {
         this.instanceName = stageName
@@ -77,6 +79,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
             addArgument(config.constructToInstance())
             addArgument(this@GameInstanceObject)
             addArgument(GameInstanceWatcher())
+            addArgument(conditionScheduler)
         }
         InjectorClassManagerStorage.of(InjectScope.GAME)
             .applyReferences(InjectorClassManagerStorage.globalVariable, projectArgument!!, this)
@@ -91,6 +94,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
     private fun enqueueNextStage() {
         StageChangedEvent(this).callEvent()
         if (++gameStagePointer >= gameData.gameStages.size) {
+            conditionScheduler.endScope(InjectScope.GAME)
             reset()
             return
         }
@@ -111,6 +115,8 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
 
     fun reset() {
         GameEndedEvent(this).callEvent()
+        conditionScheduler.endScope(InjectScope.STAGE)
+        conditionScheduler.endScope(InjectScope.GAME)
         gameStagePointer = 0
         stageArgument!!.unregisterAllListener()
         projectArgument!!.unregisterAllListener()

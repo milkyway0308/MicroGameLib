@@ -1,13 +1,15 @@
-package skywolf46.microgamelib.api.stages
+package skywolf46.microgamelib.api.systems
 
 import org.bukkit.event.EventPriority
 import skywolf46.microgamelib.annotations.InGameListener
+import skywolf46.microgamelib.api.abstraction.AbstractAttachableSystem
+import skywolf46.microgamelib.api.abstraction.IAttachableSystem
 import skywolf46.microgamelib.api.events.gameEvent.GameSuggestNextStageEvent
 import skywolf46.microgamelib.api.events.gameEvent.StageAfterChangedEvent
 import skywolf46.microgamelib.api.events.playerEvent.GameAfterJoinEvent
 import skywolf46.microgamelib.api.events.playerEvent.GameJoinEvent
 
-abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : MicroGame() {
+abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractAttachableSystem() {
     @InGameListener(priority = EventPriority.LOWEST)
     fun GameJoinEvent.onEvent() {
         if (isCancelledFromFramework()) {

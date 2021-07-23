@@ -28,6 +28,15 @@ class ConditionScheduler {
     }
 
 
+    fun syncRepeat(scope: InjectScope, delay: Long, period: Long, unit: () -> Unit) {
+        BukkitRunnableImpl({
+            scopeOf(scope) -= this
+        }, unit).apply {
+            scopeOf(scope) += this
+            runTaskTimer(MicroGameLib.inst, delay, period)
+        }
+    }
+
     fun scopeOf(scope: InjectScope) = scopeMap.computeIfAbsent(scope) { mutableListOf() }
 
     internal fun endScope(scope: InjectScope) {
@@ -35,6 +44,7 @@ class ConditionScheduler {
             it.cancel()
         }
     }
+
 
     inner class BukkitRunnableImpl(val unregisterer: BukkitRunnableImpl.() -> Unit, val unit: () -> Unit) :
         BukkitRunnable() {
