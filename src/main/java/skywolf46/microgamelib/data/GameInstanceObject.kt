@@ -80,6 +80,7 @@ class GameInstanceObject : AbstractDataLoader<GameInstanceObject> {
             addArgument(this@GameInstanceObject)
             addArgument(GameInstanceWatcher())
             addArgument(conditionScheduler)
+            addArgument(this)
         }
         InjectorClassManagerStorage.of(InjectScope.GAME)
             .applyReferences(InjectorClassManagerStorage.globalVariable, projectArgument!!, this)

@@ -12,7 +12,7 @@ import skywolf46.microgamelib.api.events.gameEvent.StageChangedEvent
 import skywolf46.microgamelib.api.events.playerEvent.PlayerAfterSpectateEvent
 import skywolf46.microgamelib.api.stages.MicroGame
 
-abstract class MicroSurvivalGame : AbstractAttachableSystem() {
+class MicroSurvivalGame : AbstractAttachableSystem() {
 
     @InGameListener
     fun PlayerPreDeathEvent.onGame() {
@@ -32,7 +32,7 @@ abstract class MicroSurvivalGame : AbstractAttachableSystem() {
             player.gameMode = GameMode.SURVIVAL
     }
 
-    @InGameListener(priority = EventPriority.HIGHEST)
+    @InGameListener(priority = EventPriority.LOWEST)
     fun StageChangedEvent.onEvent() {
         winnerManager.addResult(checkWinner()!!)
     }

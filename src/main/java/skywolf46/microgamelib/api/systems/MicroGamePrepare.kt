@@ -9,7 +9,7 @@ import skywolf46.microgamelib.api.events.gameEvent.StageAfterChangedEvent
 import skywolf46.microgamelib.api.events.playerEvent.GameAfterJoinEvent
 import skywolf46.microgamelib.api.events.playerEvent.GameJoinEvent
 
-abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractAttachableSystem() {
+class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractAttachableSystem() {
     @InGameListener(priority = EventPriority.LOWEST)
     fun GameJoinEvent.onEvent() {
         if (isCancelledFromFramework()) {
@@ -37,5 +37,9 @@ abstract class MicroGamePrepare(val requiredPlayers: Int = 10) : AbstractAttacha
         if (party.size() >= requiredPlayers) {
             instance.nextStage()
         }
+    }
+
+    override fun hasWinner(): Boolean {
+        return false
     }
 }

@@ -83,7 +83,7 @@ class InjectReference : ArgumentStorage() {
                 println("Setting ${x.name}")
                 val list = get(x)
                 if (list.isEmpty()) {
-                    println("Empty list! ignoring.")
+                    println("Empty list! ignoring ${x.name}.")
                     continue
                 }
                 for (count in y.indices) {
